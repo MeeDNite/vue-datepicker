@@ -5,14 +5,14 @@
         <select class="datepicker-content__select">
           <option value="1">فروردین</option>
         </select>
-        <ArrowDownIcon :width="24" :height="24" />
+        <!-- <ArrowDownIcon :width="24" :height="24" /> -->
       </div>
 
       <div class="datepicker-content__dropdown">
         <select class="datepicker-content__select">
-          <option value="1">1404</option>
+          <option value="1">{{ toPersianNumbers(1404) }}</option>
         </select>
-        <ArrowDownIcon :width="24" :height="24" />
+        <!-- <ArrowDownIcon :width="24" :height="24" /> -->
       </div>
     </div>
 
@@ -43,14 +43,15 @@
 
 <script setup>
   import { ref } from 'vue';
-  import ArrowDownIcon from '../icons/ArrowDownIcon.vue';
+  // import ArrowDownIcon from '../icons/ArrowDownIcon.vue';
+  import { toPersianNumbers } from '@/utils/toPersianNumbers';
 
-  const weekdays = ['شنبه', '1شنبه', '2شنبه', '3شنبه', '4شنبه', '5شنبه', 'جمعه'];
+  const weekdays = ['شنبه', '۱شنبه', '۲شنبه', '۳شنبه', '۴شنبه', '۵شنبه', 'جمعه'];
 
   const calendarDays = ref(
     Array.from({ length: 31 }, (_, i) => ({
       id: i + 1,
-      label: i + 1,
+      label: toPersianNumbers(i + 1),
       isSelected: false,
       isToday: i + 1 === 15,
       isDisabled: false,
@@ -66,7 +67,8 @@
 
 <style scoped lang="scss">
   .datepicker-content {
-    margin: 16px 0;
+    @include customFlex(column, space-between, normal, 20px);
+    margin-bottom: 20px;
 
     &__controls {
       @include customFlex(row, space-between, center);
@@ -87,6 +89,8 @@
       background: transparent;
       font-size: 14px;
       font-weight: 400;
+      font-family: 'IRANYekan';
+      font-variant-numeric: normal;
       cursor: pointer;
       width: 100%;
     }
@@ -97,6 +101,8 @@
       gap: 16px;
       font-size: 12px;
       font-weight: 400;
+      font-family: 'IRANYekan';
+      font-variant-numeric: normal;
       background-color: $gray-50;
       height: 16px;
       width: 100%;
@@ -122,6 +128,8 @@
       border-radius: 10px;
       font-size: 14px;
       font-weight: 400;
+      font-family: 'IRANYekan';
+      font-variant-numeric: normal;
       width: 32px;
       height: 32px;
       cursor: pointer;

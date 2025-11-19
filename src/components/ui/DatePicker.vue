@@ -18,5 +18,6 @@
     width: 360px;
     padding: 24px 16px 16px 16px;
     border-radius: $radius-8;
+    @include customFlex(column, space-between, 12px);
   }
 </style>
