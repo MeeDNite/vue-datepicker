@@ -24,14 +24,14 @@
         <template #icon-right>
           <ArrowDownIcon :width="24" :height="24" />
         </template>
-        {{ toPersianNumbers(currentYear) }}
+        {{ currentYear }}
       </BaseButton>
     </div>
 
     <template v-if="currentView === 'years'">
       <div class="datepicker-content__years-controls">
         <ArrowRightIcon :width="24" :height="24" @click="prevYearRange" />
-        <p class="datepicker-content__years-controls-year">{{ toPersianNumbers(currentYear) }}</p>
+        <p class="datepicker-content__years-controls-year">{{ currentYear }}</p>
         <ArrowLeftIcon :width="24" :height="24" @click="nextYearRange" />
       </div>
       <div class="datepicker-content__years">
@@ -122,7 +122,6 @@
     selectDay: selectDayInternal,
     confirmSelection,
     getMonthName,
-    toPersianNumbers,
     nextYearRange,
     prevYearRange,
   } = useDatePicker({

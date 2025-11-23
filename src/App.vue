@@ -1,10 +1,10 @@
 <script setup>
-  import DatePicker from './components/ui/DatePicker.vue';
+  import DatepickerInput from './components/ui/DatepickerInput.vue';
 </script>
 
 <template>
   <div class="container">
-    <DatePicker min-date="1404/01/01" max-date="1404/12/29" />
+    <DatepickerInput />
   </div>
 </template>
 

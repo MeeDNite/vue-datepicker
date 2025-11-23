@@ -1,6 +1,6 @@
 <template>
-  <main class="datepicker">
-    <DatepickerHeader />
+  <section class="datepicker">
+    <DatepickerHeader @close="handleClose" />
     <DatepickerContent
       :locale="locale"
       :initial-value="modelValue"
@@ -12,7 +12,7 @@
     <BaseButton variant="primary" type="submit" size="medium" block @click="handleConfirm">
       تایید
     </BaseButton>
-  </main>
+  </section>
 </template>
 
 <script setup>
@@ -56,6 +56,10 @@
         emit('confirm', confirmedDate);
       }
     }
+  }
+
+  function handleClose() {
+    emit('close');
   }
 
   onMounted(() => {
