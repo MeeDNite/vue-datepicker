@@ -2,11 +2,13 @@
   <section class="datepicker">
     <DatepickerHeader @close="handleClose" />
     <DatepickerContent
-      :locale="locale"
-      :initial-value="modelValue"
-      :min-date="minDate"
-      :max-date="maxDate"
+      :locale="props.locale"
+      :mode="props.mode"
+      :initial-value="props.modelValue"
+      :min-date="props.minDate"
+      :max-date="props.maxDate"
       @update:selected-date="onDateSelect"
+      @update:range-selection="onRangeSelect"
       ref="contentRef"
     />
     <BaseButton variant="primary" type="submit" size="medium" block @click="handleConfirm">
@@ -21,7 +23,7 @@
   import DatepickerHeader from './DatepickerHeader.vue';
   import BaseButton from '../common/BaseButton.vue';
 
-  defineProps({
+  const props = defineProps({
     modelValue: {
       type: [Object, String],
       default: null,
@@ -29,6 +31,10 @@
     locale: {
       type: String,
       default: 'fa',
+    },
+    mode: {
+      type: String,
+      default: 'single', // 'single' | 'range'
     },
     minDate: {
       type: [Object, String],
@@ -46,6 +52,10 @@
 
   function onDateSelect(date) {
     emit('change', date);
+  }
+
+  function onRangeSelect(range) {
+    emit('change', range);
   }
 
   function handleConfirm() {

@@ -20,6 +20,7 @@
         <div class="datepicker-container" @click.stop>
           <DatePicker
             v-model="internalValue"
+            :mode="mode"
             :min-date="minDate"
             :max-date="maxDate"
             :locale="locale"
@@ -43,6 +44,11 @@
     modelValue: {
       type: Object,
       default: null,
+    },
+    mode: {
+      type: String,
+      default: 'single',
+      validator: (value) => ['single', 'range'].includes(value),
     },
     placeholder: {
       type: String,
@@ -72,10 +78,9 @@
   const internalValue = ref(props.modelValue);
   const inputRef = ref(null);
 
-  const formattedDate = computed(() => {
-    if (!internalValue.value) return '';
-
-    const { jy, jm, jd } = internalValue.value;
+  function formatSingleDate(date) {
+    if (!date) return '';
+    const { jy, jm, jd } = date;
     let formatted = props.format;
 
     formatted = formatted.replace('YYYY', jy);
@@ -83,6 +88,21 @@
     formatted = formatted.replace('DD', String(jd).padStart(2, '0'));
 
     return toPersianNumbers(formatted);
+  }
+
+  const formattedDate = computed(() => {
+    if (!internalValue.value) return '';
+
+    if (props.mode === 'range') {
+      const { start, end } = internalValue.value;
+      if (!start) return '';
+      const startFormatted = formatSingleDate(start);
+      if (!end) return startFormatted;
+      const endFormatted = formatSingleDate(end);
+      return `${startFormatted} - ${endFormatted}`;
+    }
+
+    return formatSingleDate(internalValue.value);
   });
 
   function togglePicker() {

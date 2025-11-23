@@ -77,6 +77,9 @@
             { 'datepicker-content__day--selected': day.isSelected },
             { 'datepicker-content__day--prev-month': day.isPrevMonth },
             { 'datepicker-content__day--next-month': day.isNextMonth },
+            { 'datepicker-content__day--in-range': day.isInRange },
+            { 'datepicker-content__day--range-start': day.isRangeStart },
+            { 'datepicker-content__day--range-end': day.isRangeEnd },
           ]"
           :disabled="day.isDisabled"
           @click="selectDay(day)"
@@ -100,12 +103,13 @@
 
   const props = defineProps({
     locale: { type: String, default: 'fa' },
+    mode: { type: String, default: 'single' },
     initialValue: { type: [Object, String], default: null },
     minDate: { type: [Object, String], default: null },
     maxDate: { type: [Object, String], default: null },
   });
 
-  const emit = defineEmits(['update:selectedDate', 'update:currentView']);
+  const emit = defineEmits(['update:selectedDate', 'update:currentView', 'update:rangeSelection']);
 
   const {
     currentView,
@@ -116,16 +120,19 @@
     yearRange,
     calendarDays,
     selectedDate,
+    rangeStart,
+    rangeEnd,
     toggleView: toggleViewInternal,
     selectMonth: selectMonthInternal,
     selectYear: selectYearInternal,
     selectDay: selectDayInternal,
-    confirmSelection,
+    confirmSelection: confirmSelectionInternal,
     getMonthName,
     nextYearRange,
     prevYearRange,
   } = useDatePicker({
     locale: props.locale,
+    mode: props.mode,
     initialValue: props.initialValue,
     minDate: props.minDate,
     maxDate: props.maxDate,
@@ -148,7 +155,21 @@
 
   function selectDay(day) {
     selectDayInternal(day);
-    emit('update:selectedDate', selectedDate.value);
+    if (props.mode === 'range') {
+      emit('update:rangeSelection', { start: rangeStart.value, end: rangeEnd.value });
+    } else {
+      emit('update:selectedDate', selectedDate.value);
+    }
+  }
+
+  function confirmSelection() {
+    if (props.mode === 'range') {
+      if (rangeStart.value && rangeEnd.value) {
+        return { start: rangeStart.value, end: rangeEnd.value };
+      }
+      return null;
+    }
+    return confirmSelectionInternal();
   }
 
   defineExpose({
@@ -216,7 +237,8 @@
     &__days {
       display: grid;
       grid-template-columns: repeat(7, 1fr);
-      gap: 16px;
+      row-gap: 16px;
+      column-gap: 0;
       font-weight: 400;
       font-size: 14px;
     }
@@ -226,22 +248,52 @@
       font-size: 14px;
       font-weight: 400;
       font-family: 'IRANYekan';
-      font-variant-numeric: normal;
-      width: 32px;
+      width: 100%;
       height: 32px;
       cursor: pointer;
       @include customFlex(column, start, center);
+      position: relative;
 
       &--selected {
         background-color: $primary-500;
         color: $white-100;
-        width: 32px;
-        height: 32px;
+      }
+
+      &--range-start,
+      &--range-end {
+        color: $white-100;
+        z-index: 1;
+
+        &::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          width: 32px;
+          height: 32px;
+          background-color: $primary-500;
+          border-radius: 10px;
+          z-index: -1;
+        }
+      }
+
+      &--range-start {
+        background: linear-gradient(to right, rgba($primary-300, 1) 50%, transparent 50%);
+        border-radius: 0;
+      }
+
+      &--range-end {
+        background: linear-gradient(to left, rgba($primary-300, 0.15) 50%, transparent 15%);
+        border-radius: 0;
       }
 
       &--prev-month,
       &--next-month {
         color: $gray-300;
+      }
+
+      &--in-range {
+        background-color: rgba($primary-500, 0.15);
+        border-radius: 0;
       }
 
       &-today-text {

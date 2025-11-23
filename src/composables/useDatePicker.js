@@ -35,16 +35,27 @@ function compareDates(a, b) {
 export function useDatePicker(options = {}) {
   const {
     locale = 'fa',
+    mode = 'single',
     initialValue = null,
     minDate = null,
     maxDate = null,
   } = options;
 
   const today = jalaaliToday();
-  const parsedInitial = parseJalaaliDate(initialValue);
   const parsedMinDate = parseJalaaliDate(minDate);
   const parsedMaxDate = parseJalaaliDate(maxDate);
 
+  let parsedInitial = null;
+  let parsedRangeStart = null;
+  let parsedRangeEnd = null;
+
+  if (mode === 'range' && initialValue && typeof initialValue === 'object') {
+    parsedRangeStart = parseJalaaliDate(initialValue.start);
+    parsedRangeEnd = parseJalaaliDate(initialValue.end);
+    parsedInitial = parsedRangeStart;
+  } else {
+    parsedInitial = parseJalaaliDate(initialValue);
+  }
 
   const currentView = ref('days');
   const currentYear = ref(parsedInitial?.jy || today.jy);
@@ -54,6 +65,8 @@ export function useDatePicker(options = {}) {
   const selectedDay = ref(parsedInitial?.jd || null);
   const confirmedDate = ref(parsedInitial ? { ...parsedInitial } : null);
 
+  const rangeStart = ref(parsedRangeStart);
+  const rangeEnd = ref(parsedRangeEnd);
 
   const WEEKDAYS = computed(() => getJalaaliWeekdays(locale));
   const MONTHS = computed(() => Array.from({ length: 12 }, (_, i) => i + 1));
@@ -77,7 +90,6 @@ export function useDatePicker(options = {}) {
     return years;
   });
 
-
   function isDateDisabled(year, month, day) {
     const date = { jy: year, jm: month, jd: day };
 
@@ -90,6 +102,21 @@ export function useDatePicker(options = {}) {
     }
 
     return false;
+  }
+
+  function isDateInRange(date) {
+    if (!rangeStart.value || !rangeEnd.value) return false;
+    return compareDates(date, rangeStart.value) > 0 && compareDates(date, rangeEnd.value) < 0;
+  }
+
+  function isRangeStartDate(date) {
+    if (!rangeStart.value) return false;
+    return compareDates(date, rangeStart.value) === 0;
+  }
+
+  function isRangeEndDate(date) {
+    if (!rangeEnd.value) return false;
+    return compareDates(date, rangeEnd.value) === 0;
   }
 
   const calendarDays = computed(() => {
@@ -107,6 +134,7 @@ export function useDatePicker(options = {}) {
 
       for (let i = firstDayWeekday - 1; i >= 0; i--) {
         const day = prevMonthDays - i;
+        const dateObj = { jy: prevYear, jm: prevMonth, jd: day };
         days.push({
           id: `prev-${day}`,
           day,
@@ -115,6 +143,9 @@ export function useDatePicker(options = {}) {
           label: toPersianNumbers(day),
           isDisabled: isDateDisabled(prevYear, prevMonth, day),
           isPrevMonth: true,
+          isInRange: isDateInRange(dateObj),
+          isRangeStart: isRangeStartDate(dateObj),
+          isRangeEnd: isRangeEndDate(dateObj),
         });
       }
     }
@@ -122,9 +153,8 @@ export function useDatePicker(options = {}) {
     for (let day = 1; day <= daysInMonth; day++) {
       const isToday = year === today.jy && month === today.jm && day === today.jd;
       const isSelected =
-        year === selectedYear.value &&
-        month === selectedMonth.value &&
-        day === selectedDay.value;
+        year === selectedYear.value && month === selectedMonth.value && day === selectedDay.value;
+      const dateObj = { jy: year, jm: month, jd: day };
 
       days.push({
         id: day,
@@ -135,6 +165,9 @@ export function useDatePicker(options = {}) {
         isSelected,
         isToday,
         isDisabled: isDateDisabled(year, month, day),
+        isInRange: isDateInRange(dateObj),
+        isRangeStart: isRangeStartDate(dateObj),
+        isRangeEnd: isRangeEndDate(dateObj),
       });
     }
     const totalCells = 35;
@@ -143,6 +176,7 @@ export function useDatePicker(options = {}) {
     const nextYear = month === 12 ? year + 1 : year;
 
     for (let day = 1; day <= remainingCells; day++) {
+      const dateObj = { jy: nextYear, jm: nextMonth, jd: day };
       days.push({
         id: `next-${day}`,
         day,
@@ -151,6 +185,9 @@ export function useDatePicker(options = {}) {
         label: toPersianNumbers(day),
         isDisabled: isDateDisabled(nextYear, nextMonth, day),
         isNextMonth: true,
+        isInRange: isDateInRange(dateObj),
+        isRangeStart: isRangeStartDate(dateObj),
+        isRangeEnd: isRangeEndDate(dateObj),
       });
     }
 
@@ -179,9 +216,25 @@ export function useDatePicker(options = {}) {
       currentMonth.value = dayObj.month;
     }
 
-    selectedYear.value = dayObj.year;
-    selectedMonth.value = dayObj.month;
-    selectedDay.value = dayObj.day;
+    const clickedDate = { jy: dayObj.year, jm: dayObj.month, jd: dayObj.day };
+
+    if (mode === 'range') {
+      if (!rangeStart.value || (rangeStart.value && rangeEnd.value)) {
+        rangeStart.value = clickedDate;
+        rangeEnd.value = null;
+      } else {
+        if (compareDates(clickedDate, rangeStart.value) < 0) {
+          rangeEnd.value = rangeStart.value;
+          rangeStart.value = clickedDate;
+        } else {
+          rangeEnd.value = clickedDate;
+        }
+      }
+    } else {
+      selectedYear.value = dayObj.year;
+      selectedMonth.value = dayObj.month;
+      selectedDay.value = dayObj.day;
+    }
   }
 
   function confirmSelection() {
@@ -212,6 +265,8 @@ export function useDatePicker(options = {}) {
     selectedMonth,
     selectedDay,
     confirmedDate,
+    rangeStart,
+    rangeEnd,
     WEEKDAYS,
     MONTHS,
     yearRange,

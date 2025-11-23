@@ -4,7 +4,7 @@
 
 <template>
   <div class="container">
-    <DatepickerInput />
+    <DatepickerInput mode="range" />
   </div>
 </template>
 
