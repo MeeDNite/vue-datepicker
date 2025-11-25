@@ -102,6 +102,12 @@
       return `${startFormatted} - ${endFormatted}`;
     }
 
+    if (props.mode === 'multiple') {
+      if (!Array.isArray(internalValue.value) || internalValue.value.length === 0) return '';
+      const formattedDates = internalValue.value.map(formatSingleDate);
+      return formattedDates.join('، ');
+    }
+
     return formatSingleDate(internalValue.value);
   });
 
@@ -141,7 +147,7 @@
 <style scoped lang="scss">
   .datepicker-wrapper {
     position: relative;
-    width: 200px;
+    width: 250px;
   }
 
   .datepicker-input-container {
@@ -151,7 +157,7 @@
 
   .datepicker-input {
     width: 100%;
-    padding: 12px 40px 12px 16px;
+    padding: 12px 16px;
     border: 1px solid $gray-200;
     border-radius: 8px;
     font-size: 14px;

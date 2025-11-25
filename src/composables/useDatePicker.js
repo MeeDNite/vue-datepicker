@@ -48,11 +48,15 @@ export function useDatePicker(options = {}) {
   let parsedInitial = null;
   let parsedRangeStart = null;
   let parsedRangeEnd = null;
+  let parsedMultipleDates = [];
 
   if (mode === 'range' && initialValue && typeof initialValue === 'object') {
     parsedRangeStart = parseJalaaliDate(initialValue.start);
     parsedRangeEnd = parseJalaaliDate(initialValue.end);
     parsedInitial = parsedRangeStart;
+  } else if (mode === 'multiple' && Array.isArray(initialValue)) {
+    parsedMultipleDates = initialValue.map(parseJalaaliDate).filter(Boolean);
+    parsedInitial = parsedMultipleDates[0];
   } else {
     parsedInitial = parseJalaaliDate(initialValue);
   }
@@ -67,6 +71,8 @@ export function useDatePicker(options = {}) {
 
   const rangeStart = ref(parsedRangeStart);
   const rangeEnd = ref(parsedRangeEnd);
+
+  const multipleDates = ref(parsedMultipleDates);
 
   const WEEKDAYS = computed(() => getJalaaliWeekdays(locale));
   const MONTHS = computed(() => Array.from({ length: 12 }, (_, i) => i + 1));
@@ -119,6 +125,10 @@ export function useDatePicker(options = {}) {
     return compareDates(date, rangeEnd.value) === 0;
   }
 
+  function isDateInMultipleSelection(date) {
+    return multipleDates.value.some((d) => compareDates(d, date) === 0);
+  }
+
   const calendarDays = computed(() => {
     const year = currentYear.value;
     const month = currentMonth.value;
@@ -152,9 +162,15 @@ export function useDatePicker(options = {}) {
 
     for (let day = 1; day <= daysInMonth; day++) {
       const isToday = year === today.jy && month === today.jm && day === today.jd;
-      const isSelected =
-        year === selectedYear.value && month === selectedMonth.value && day === selectedDay.value;
       const dateObj = { jy: year, jm: month, jd: day };
+
+      let isSelected = false;
+      if (mode === 'multiple') {
+        isSelected = isDateInMultipleSelection(dateObj);
+      } else {
+        isSelected =
+          year === selectedYear.value && month === selectedMonth.value && day === selectedDay.value;
+      }
 
       days.push({
         id: day,
@@ -230,6 +246,15 @@ export function useDatePicker(options = {}) {
           rangeEnd.value = clickedDate;
         }
       }
+    } else if (mode === 'multiple') {
+      const existingIndex = multipleDates.value.findIndex(
+        (d) => compareDates(d, clickedDate) === 0,
+      );
+      if (existingIndex !== -1) {
+        multipleDates.value.splice(existingIndex, 1);
+      } else {
+        multipleDates.value.push(clickedDate);
+      }
     } else {
       selectedYear.value = dayObj.year;
       selectedMonth.value = dayObj.month;
@@ -238,11 +263,24 @@ export function useDatePicker(options = {}) {
   }
 
   function confirmSelection() {
-    if (selectedDate.value) {
-      confirmedDate.value = { ...selectedDate.value };
-      return confirmedDate.value;
+    if (mode === 'range') {
+      if (rangeStart.value && rangeEnd.value) {
+        return { start: rangeStart.value, end: rangeEnd.value };
+      }
+      return null;
+    } else if (mode === 'multiple') {
+      if (multipleDates.value.length > 0) {
+        const sortedDates = [...multipleDates.value].sort(compareDates);
+        return sortedDates;
+      }
+      return [];
+    } else {
+      if (selectedDate.value) {
+        confirmedDate.value = { ...selectedDate.value };
+        return confirmedDate.value;
+      }
+      return null;
     }
-    return null;
   }
 
   function getMonthName(month) {
@@ -267,6 +305,7 @@ export function useDatePicker(options = {}) {
     confirmedDate,
     rangeStart,
     rangeEnd,
+    multipleDates,
     WEEKDAYS,
     MONTHS,
     yearRange,

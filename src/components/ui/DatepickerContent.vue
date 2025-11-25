@@ -109,7 +109,12 @@
     maxDate: { type: [Object, String], default: null },
   });
 
-  const emit = defineEmits(['update:selectedDate', 'update:currentView', 'update:rangeSelection']);
+  const emit = defineEmits([
+    'update:selectedDate',
+    'update:currentView',
+    'update:rangeSelection',
+    'update:multipleSelection',
+  ]);
 
   const {
     currentView,
@@ -122,6 +127,7 @@
     selectedDate,
     rangeStart,
     rangeEnd,
+    multipleDates,
     toggleView: toggleViewInternal,
     selectMonth: selectMonthInternal,
     selectYear: selectYearInternal,
@@ -157,18 +163,14 @@
     selectDayInternal(day);
     if (props.mode === 'range') {
       emit('update:rangeSelection', { start: rangeStart.value, end: rangeEnd.value });
+    } else if (props.mode === 'multiple') {
+      emit('update:multipleSelection', multipleDates.value);
     } else {
       emit('update:selectedDate', selectedDate.value);
     }
   }
 
   function confirmSelection() {
-    if (props.mode === 'range') {
-      if (rangeStart.value && rangeEnd.value) {
-        return { start: rangeStart.value, end: rangeEnd.value };
-      }
-      return null;
-    }
     return confirmSelectionInternal();
   }
 
@@ -248,7 +250,7 @@
       font-size: 14px;
       font-weight: 400;
       font-family: 'IRANYekan';
-      width: 100%;
+      width: 32px;
       height: 32px;
       cursor: pointer;
       @include customFlex(column, start, center);
@@ -277,7 +279,7 @@
       }
 
       &--range-start {
-        background: linear-gradient(to right, rgba($primary-300, 1) 50%, transparent 50%);
+        background: linear-gradient(to right, rgba($primary-300, 0.15) 50%, transparent 50%);
         border-radius: 0;
       }
 
@@ -292,7 +294,7 @@
       }
 
       &--in-range {
-        background-color: rgba($primary-500, 0.15);
+        background-color: rgba($primary-300, 0.15);
         border-radius: 0;
       }
 

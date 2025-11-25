@@ -9,6 +9,7 @@
       :max-date="props.maxDate"
       @update:selected-date="onDateSelect"
       @update:range-selection="onRangeSelect"
+      @update:multiple-selection="onMultipleSelect"
       ref="contentRef"
     />
     <BaseButton variant="primary" type="submit" size="medium" block @click="handleConfirm">
@@ -34,7 +35,7 @@
     },
     mode: {
       type: String,
-      default: 'single', // 'single' | 'range'
+      default: 'single', 
     },
     minDate: {
       type: [Object, String],
@@ -56,6 +57,10 @@
 
   function onRangeSelect(range) {
     emit('change', range);
+  }
+
+  function onMultipleSelect(dates) {
+    emit('change', dates);
   }
 
   function handleConfirm() {
