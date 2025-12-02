@@ -119,7 +119,7 @@
       position: absolute;
       background-color: $gray-200;
       border-radius: $radius-4;
-      min-width: 100px;
+      max-width: 100px;
       z-index: 1000;
       overflow: hidden;
     }
@@ -132,6 +132,7 @@
       font-size: 12px;
       font-weight: 400;
       transition: background-color 0.2s ease;
+      font-family: 'IRANYekan';
     }
   }
 

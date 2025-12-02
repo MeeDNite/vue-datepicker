@@ -25,7 +25,7 @@ import { useI18nStore } from './store/i18n';
       <DatepickerInput
         v-model="selectedDateTime"
         v-model:locale="selectedLocale"
-        mode="multiple"
+        mode="range"
         :enable-time="true"
         :time-format="24"
         :enable-locale-selector="true"

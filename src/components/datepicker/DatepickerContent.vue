@@ -81,7 +81,7 @@
       </div>
       <div class="datepicker-content__days">
         <BaseButton
-          v-for="day in calendarDays"
+          v-for="(day, index) in calendarDays"
           :key="day.id"
           variant="outline"
           :class="[
@@ -93,6 +93,7 @@
             { 'datepicker-content__day--range-start': day.isRangeStart },
             { 'datepicker-content__day--range-end': day.isRangeEnd },
           ]"
+          :style="getRangeStyle(day, index)"
           :disabled="day.isDisabled"
           @click="selectDay(day)"
         >
@@ -137,7 +138,7 @@
 
   import { CALENDAR_CONFIG } from '@/constants/datepicker.js';
   import DatePickerLocaleSelector from './DatePickerLocaleSelector.vue';
-import { useI18nStore } from '@/store/i18n';
+  import { useI18nStore } from '@/store/i18n';
 
   const props = defineProps({
     locale: { type: String, default: null },
@@ -276,6 +277,25 @@ import { useI18nStore } from '@/store/i18n';
     }
   }
 
+  function getRangeStyle(day, index) {
+    if (!day.isInRange && !day.isRangeStart && !day.isRangeEnd) {
+      return {};
+    }
+
+    const rangeStartIndex = calendarDays.value.findIndex((d) => d.isRangeStart);
+    const rangeEndIndex = calendarDays.value.findIndex((d) => d.isRangeEnd);
+
+    if (rangeStartIndex === -1 || rangeEndIndex === -1) return {};
+
+    const totalDays = rangeEndIndex - rangeStartIndex;
+    const currentPosition = index - rangeStartIndex;
+    const percentage = totalDays > 0 ? (currentPosition / totalDays) * 100 : 0;
+
+    return {
+      '--range-position': `${percentage}%`,
+    };
+  }
+
   function confirmSelection() {
     const dateValue = selection.getValue();
     if (!dateValue) return null;
@@ -371,18 +391,30 @@ import { useI18nStore } from '@/store/i18n';
       justify-content: space-between;
     }
 
+    &__days {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      align-items: center;
+      row-gap: 16px;
+      column-gap: 0;
+      font-weight: 400;
+      font-size: 14px;
+    }
+
     &__day {
       border-radius: 10px;
       font-size: 14px;
       font-weight: 400;
-      width: 32px;
+      width: 100%;
       height: 32px;
       cursor: pointer;
       @include customFlex(column, start, center);
       position: relative;
+
       &--selected {
         background-color: $primary-500;
         color: $white-100;
+        border-radius: 10px;
       }
 
       &--range-start,
@@ -394,6 +426,8 @@ import { useI18nStore } from '@/store/i18n';
           content: '';
           position: absolute;
           top: 0;
+          left: 50%;
+          transform: translateX(-50%);
           width: 32px;
           height: 32px;
           background-color: $primary-500;
@@ -403,13 +437,29 @@ import { useI18nStore } from '@/store/i18n';
       }
 
       &--range-start {
-        background: linear-gradient(to right, rgba($primary-300, 0.15) 50%, transparent 50%);
+        background: linear-gradient(
+          -90deg,
+          transparent 0%,
+          transparent 50%,
+          rgba(206, 224, 252, 0.15) 50%,
+          #cee0fc 98%
+        );
         border-radius: 0;
       }
 
       &--range-end {
-        background: linear-gradient(to left, rgba($primary-300, 0.15) 50%, transparent 15%);
+        background: linear-gradient(
+          -90deg,
+          #cee0fc 2%,
+          rgba(206, 224, 252, 0.15) 50%,
+          transparent 50%,
+          transparent 100%
+        );
         border-radius: 0;
+      }
+
+      &--range-start#{&}--range-end {
+        background: transparent;
       }
 
       &--prev-month,
@@ -418,7 +468,7 @@ import { useI18nStore } from '@/store/i18n';
       }
 
       &--in-range {
-        background-color: rgba($primary-300, 0.15);
+        background: linear-gradient(-90deg, #cee0fc 0%, rgba(206, 224, 252, 0.15) 100%);
         border-radius: 0;
       }
 
