@@ -1,5 +1,5 @@
+import { reactive } from 'vue';
 import { localeManager } from '@/locales/localeManager';
-import { defineStore } from 'pinia';
 
 const LOCALE_STORAGE_KEY = 'datepicker_locale';
 
@@ -21,35 +21,55 @@ function saveLocaleToStorage(locale) {
   }
 }
 
-export const useI18nStore = defineStore('i18n', {
-  state: () => ({
-    currentLocale: loadLocaleFromStorage() || 'jalali',
-  }),
-  getters: {
-    locale: (state) => localeManager.get(state.currentLocale),
-    availableLocales: () => localeManager.getAll(),
-    direction: (state) => localeManager.getDirection(state.currentLocale),
-    numberSystem: (state) => localeManager.getNumberSystem(state.currentLocale),
-    calendarType: (state) => localeManager.getCalendarType(state.currentLocale),
-  },
-  actions: {
-    setLocale(localeCode) {
-      if (localeManager.has(localeCode)) {
-        this.currentLocale = localeCode;
-        saveLocaleToStorage(localeCode);
-      }
-    },
-
-    getMonthName(month) {
-      return localeManager.getMonthName(month, this.currentLocale);
-    },
-
-    getWeekdayName(weekdays) {
-      return localeManager.getWeekdayName(weekdays, this.currentLocale);
-    },
-
-    getText(key) {
-      return localeManager.getText(key, this.currentLocale);
-    },
-  },
+const state = reactive({
+  currentLocale: loadLocaleFromStorage() || 'jalali',
 });
+
+const i18nStore = {
+  get currentLocale() {
+    return state.currentLocale;
+  },
+
+  get locale() {
+    return localeManager.get(state.currentLocale);
+  },
+
+  get availableLocales() {
+    return localeManager.getAll();
+  },
+
+  get direction() {
+    return localeManager.getDirection(state.currentLocale);
+  },
+
+  get numberSystem() {
+    return localeManager.getNumberSystem(state.currentLocale);
+  },
+
+  get calendarType() {
+    return localeManager.getCalendarType(state.currentLocale);
+  },
+
+  setLocale(localeCode) {
+    if (localeManager.has(localeCode)) {
+      state.currentLocale = localeCode;
+      saveLocaleToStorage(localeCode);
+    }
+  },
+
+  getMonthName(month) {
+    return localeManager.getMonthName(month, state.currentLocale);
+  },
+
+  getWeekdayName(weekdays) {
+    return localeManager.getWeekdayName(weekdays, state.currentLocale);
+  },
+
+  getText(key) {
+    return localeManager.getText(key, state.currentLocale);
+  },
+};
+
+export function useI18nStore() {
+  return i18nStore;
+}
