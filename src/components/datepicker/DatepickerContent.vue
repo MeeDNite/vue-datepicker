@@ -80,28 +80,34 @@
         </span>
       </div>
       <div class="datepicker-content__days">
-        <BaseButton
-          v-for="(day, index) in calendarDays"
-          :key="day.id"
-          variant="outline"
-          :class="[
-            'datepicker-content__day',
-            { 'datepicker-content__day--selected': day.isSelected },
-            { 'datepicker-content__day--prev-month': day.isPrevMonth },
-            { 'datepicker-content__day--next-month': day.isNextMonth },
-            { 'datepicker-content__day--in-range': day.isInRange },
-            { 'datepicker-content__day--range-start': day.isRangeStart },
-            { 'datepicker-content__day--range-end': day.isRangeEnd },
-          ]"
-          :style="getRangeStyle(day, index)"
-          :disabled="day.isDisabled"
-          @click="selectDay(day)"
+        <div
+          v-for="(week, weekIndex) in calendarWeeks"
+          :key="`week-${weekIndex}`"
+          class="datepicker-content__week"
+          :style="getWeekStyle(week)"
         >
-          {{ formatNumber(day.day) }}
-          <span v-if="day.isToday && !day.isSelected" class="datepicker-content__day-today-text">
-            {{ i18nStore.getText('todayText') }}
-          </span>
-        </BaseButton>
+          <BaseButton
+            v-for="day in week"
+            :key="day.id"
+            variant="outline"
+            :class="[
+              'datepicker-content__day',
+              { 'datepicker-content__day--selected': day.isSelected },
+              { 'datepicker-content__day--prev-month': day.isPrevMonth },
+              { 'datepicker-content__day--next-month': day.isNextMonth },
+              { 'datepicker-content__day--in-range': day.isInRange },
+              { 'datepicker-content__day--range-start': day.isRangeStart },
+              { 'datepicker-content__day--range-end': day.isRangeEnd },
+            ]"
+            :disabled="day.isDisabled"
+            @click="selectDay(day)"
+          >
+            {{ formatNumber(day.day) }}
+            <span v-if="day.isToday && !day.isSelected" class="datepicker-content__day-today-text">
+              {{ i18nStore.getText('todayText') }}
+            </span>
+          </BaseButton>
+        </div>
       </div>
     </template>
 
@@ -184,7 +190,7 @@
     ? useTimeSelection({ timeFormat: props.timeFormat, initialValue: props.initialValue })
     : null;
 
-  const { days: calendarDays } = useCalendarGrid({
+  const { weeks: calendarWeeks } = useCalendarGrid({
     year: navigation.currentYear,
     month: navigation.currentMonth,
     selection,
@@ -277,22 +283,44 @@
     }
   }
 
-  function getRangeStyle(day, index) {
-    if (!day.isInRange && !day.isRangeStart && !day.isRangeEnd) {
-      return {};
+  function getWeekStyle(week) {
+    const hasRange = week.some((day) => day.isInRange || day.isRangeStart || day.isRangeEnd);
+    if (!hasRange) return {};
+
+    const hasRangeStart = week.some((day) => day.isRangeStart);
+    const hasRangeEnd = week.some((day) => day.isRangeEnd);
+
+    let firstRangeIndex = -1;
+    let lastRangeIndex = -1;
+
+    week.forEach((day, index) => {
+      if (day.isInRange || day.isRangeStart || day.isRangeEnd) {
+        if (firstRangeIndex === -1) firstRangeIndex = index;
+        lastRangeIndex = index;
+      }
+    });
+
+    if (firstRangeIndex === -1 || lastRangeIndex === -1) return {};
+
+    let startPercent, endPercent;
+
+    if (hasRangeStart) {
+      const rangeStartIndex = week.findIndex((day) => day.isRangeStart);
+      startPercent = (rangeStartIndex / 7) * 100 + 100 / 14;
+    } else {
+      startPercent = (firstRangeIndex / 7) * 100;
     }
 
-    const rangeStartIndex = calendarDays.value.findIndex((d) => d.isRangeStart);
-    const rangeEndIndex = calendarDays.value.findIndex((d) => d.isRangeEnd);
-
-    if (rangeStartIndex === -1 || rangeEndIndex === -1) return {};
-
-    const totalDays = rangeEndIndex - rangeStartIndex;
-    const currentPosition = index - rangeStartIndex;
-    const percentage = totalDays > 0 ? (currentPosition / totalDays) * 100 : 0;
+    if (hasRangeEnd) {
+      const rangeEndIndex = week.findIndex((day) => day.isRangeEnd);
+      endPercent = (rangeEndIndex / 7) * 100 + 100 / 14;
+    } else {
+      endPercent = ((lastRangeIndex + 0.8) / 7) * 100;
+    }
 
     return {
-      '--range-position': `${percentage}%`,
+      '--gradient-start': `${100 - endPercent}%`,
+      '--gradient-end': `${100 - startPercent}%`,
     };
   }
 
@@ -324,7 +352,6 @@
     confirmSelection,
   });
 </script>
-
 <style scoped lang="scss">
   .datepicker-content {
     @include customFlex(column, space-between, normal, 20px);
@@ -381,6 +408,12 @@
     }
 
     &__days {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      position: relative;
+    }
+    &__week {
       display: grid;
       grid-template-columns: repeat(7, 32px);
       align-items: center;
@@ -389,16 +422,21 @@
       font-weight: 400;
       font-size: 14px;
       justify-content: space-between;
-    }
-
-    &__days {
       display: grid;
       grid-template-columns: repeat(7, 1fr);
-      align-items: center;
-      row-gap: 16px;
-      column-gap: 0;
-      font-weight: 400;
-      font-size: 14px;
+      position: relative;
+
+      &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: var(--gradient-start, 0%);
+        width: calc(var(--gradient-end, 0%) - var(--gradient-start, 0%));
+        height: 100%;
+        background: linear-gradient(270deg, #cee0fc 0%, rgba(206, 224, 252, 0.15) 100%);
+        z-index: 0;
+        pointer-events: none;
+      }
     }
 
     &__day {
@@ -436,40 +474,16 @@
         }
       }
 
-      &--range-start {
-        background: linear-gradient(
-          -90deg,
-          transparent 0%,
-          transparent 50%,
-          rgba(206, 224, 252, 0.15) 50%,
-          #cee0fc 98%
-        );
-        border-radius: 0;
-      }
-
-      &--range-end {
-        background: linear-gradient(
-          -90deg,
-          #cee0fc 2%,
-          rgba(206, 224, 252, 0.15) 50%,
-          transparent 50%,
-          transparent 100%
-        );
-        border-radius: 0;
-      }
-
-      &--range-start#{&}--range-end {
+      &--range-start,
+      &--range-end,
+      &--in-range {
         background: transparent;
+        border-radius: 0;
       }
 
       &--prev-month,
       &--next-month {
         color: $gray-300;
-      }
-
-      &--in-range {
-        background: linear-gradient(-90deg, #cee0fc 0%, rgba(206, 224, 252, 0.15) 100%);
-        border-radius: 0;
       }
 
       &-today-text {
