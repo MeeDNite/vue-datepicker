@@ -83,7 +83,7 @@
       {{ getMonthName(month) }}
     </BaseButton>
   </div>
-</template> 
+</template>
 
 <script setup>
   import { computed } from 'vue';
@@ -225,6 +225,25 @@
       row-gap: 12px;
       column-gap: 29px;
       width: 100%;
+      max-height: 200px;
+      overflow-y: auto;
+      overflow-x: hidden;
+      &::-webkit-scrollbar {
+        width: 2px;
+      }
+
+      &::-webkit-scrollbar-track {
+        background: $primary-200;
+        border-radius: 10px;
+      }
+
+      &::-webkit-scrollbar-thumb {
+        background: $primary-300;
+        border-radius: 10px;
+        height: 48px;
+        width: 4px;
+      }
+
       &-btn--active {
         background-color: $primary-500;
         color: $white-100;
