@@ -4,22 +4,26 @@ import { defineConfig } from 'vite';
 import vue from '@vitejs/plugin-vue';
 import vueDevTools from 'vite-plugin-vue-devtools';
 
+const commonConfig = {
+  plugins: [vue()],
+  resolve: {
+    alias: {
+      '@': fileURLToPath(new URL('./src', import.meta.url)),
+    },
+  },
+  css: {
+    preprocessorOptions: {
+      scss: {
+        additionalData: `@use "@/assets/styles/abstracts" as *;`,
+      },
+    },
+  },
+};
+
 export default defineConfig(({ mode }) => {
   if (mode === 'lib') {
     return {
-      plugins: [vue()],
-      resolve: {
-        alias: {
-          '@': fileURLToPath(new URL('./src', import.meta.url)),
-        },
-      },
-      css: {
-        preprocessorOptions: {
-          scss: {
-            additionalData: `@use "@/assets/styles/abstracts" as *;`,
-          },
-        },
-      },
+      ...commonConfig,
       build: {
         lib: {
           entry: resolve(__dirname, 'src/index.js'),
@@ -29,13 +33,13 @@ export default defineConfig(({ mode }) => {
         rollupOptions: {
           external: ['vue'],
           output: {
-            globals: {
-              vue: 'Vue',
-            },
-            assetFileNames: (assetInfo) => {
-              if (assetInfo.names && assetInfo.names[0] === 'style.css') return 'style.css';
-              return assetInfo.names ? assetInfo.names[0] : 'asset';
-            },
+            globals: { vue: 'Vue' },
+            assetFileNames: (assetInfo) =>
+              assetInfo.names && assetInfo.names[0] === 'style.css'
+                ? 'style.css'
+                : assetInfo.names
+                  ? assetInfo.names[0]
+                  : 'asset',
           },
         },
       },
@@ -43,18 +47,7 @@ export default defineConfig(({ mode }) => {
   }
 
   return {
-    plugins: [vue(), vueDevTools()],
-    resolve: {
-      alias: {
-        '@': fileURLToPath(new URL('./src', import.meta.url)),
-      },
-    },
-    css: {
-      preprocessorOptions: {
-        scss: {
-          additionalData: `@use "@/assets/styles/abstracts" as *;`,
-        },
-      },
-    },
+    ...commonConfig,
+    plugins: [...commonConfig.plugins, vueDevTools()],
   };
 });

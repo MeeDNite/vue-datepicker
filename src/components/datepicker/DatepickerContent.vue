@@ -148,10 +148,6 @@
   function selectDay(dayObj) {
     if (dayObj.isDisabled) return;
 
-    if (dayObj.isPrevMonth || dayObj.isNextMonth) {
-      navigation.goToDate(dayObj.date);
-    }
-
     selection.select(dayObj.date);
 
     if (props.mode === 'range') {
