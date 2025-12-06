@@ -110,7 +110,7 @@
       padding: 0;
     }
 
-    &__icon--open {
+    &__icon-open {
       transform: rotate(180deg);
       transition: transform 0.2s ease;
     }
