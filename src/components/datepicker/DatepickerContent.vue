@@ -17,15 +17,7 @@
             v-for="day in week"
             :key="day.id"
             variant="outline"
-            :class="[
-              'datepicker-content__day',
-              { 'datepicker-content__day--selected': day.isSelected },
-              { 'datepicker-content__day--prev-month': day.isPrevMonth },
-              { 'datepicker-content__day--next-month': day.isNextMonth },
-              { 'datepicker-content__day--in-range': day.isInRange },
-              { 'datepicker-content__day--range-start': day.isRangeStart },
-              { 'datepicker-content__day--range-end': day.isRangeEnd },
-            ]"
+            :class="getDayClasses(day)"
             :disabled="day.isDisabled"
             @click="selectDay(day)"
           >
@@ -132,6 +124,18 @@
     };
     return fontMap[i18nStore.calendarType] || 'Arial, sans-serif';
   });
+
+  function getDayClasses(day) {
+    return [
+      'datepicker-content__day',
+      { 'datepicker-content__day--selected': day.isSelected },
+      { 'datepicker-content__day--prev-month': day.isPrevMonth },
+      { 'datepicker-content__day--next-month': day.isNextMonth },
+      { 'datepicker-content__day--in-range': day.isInRange },
+      { 'datepicker-content__day--range-start': day.isRangeStart },
+      { 'datepicker-content__day--range-end': day.isRangeEnd },
+    ];
+  }
 
   function formatNumber(value) {
     return toLocalizedNumbers(value, i18nStore.numberSystem);
