@@ -39,12 +39,12 @@ export default defineConfig(({ mode }) => {
           output: {
             exports: 'named',
             globals: { vue: 'Vue' },
-            assetFileNames: (assetInfo) =>
-              assetInfo.names && assetInfo.names[0] === 'style.css'
-                ? 'style.css'
-                : assetInfo.names
-                  ? assetInfo.names[0]
-                  : 'asset',
+            assetFileNames: (assetInfo) => {
+              if (assetInfo.names && assetInfo.names[0]?.endsWith('.css')) {
+                return 'style.css';
+              }
+              return assetInfo.names?.[0] || 'assets/[name][extname]';
+            },
             manualChunks: undefined,
             compact: true,
           },

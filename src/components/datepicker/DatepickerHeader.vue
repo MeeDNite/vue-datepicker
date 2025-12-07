@@ -1,5 +1,5 @@
 <template>
-  <div class="datepicker__header" :style="{ fontFamily: fontFamily }">
+  <div class="datepicker__header" :style="{ fontFamily }">
     <CloseButtonIcon
       :width="24"
       :height="24"
@@ -72,7 +72,7 @@
 
   <div v-if="props.currentView === 'months'" class="datepicker-content__months">
     <BaseButton
-      v-for="month in MONTHS"
+      v-for="month in months"
       :key="month"
       variant="secondary"
       size="small"
@@ -146,18 +146,8 @@
   });
 
   const availableLocales = computed(() => i18nStore.availableLocales);
-  const MONTHS = computed(() =>
+  const months = computed(() =>
     Array.from({ length: CALENDAR_CONFIG.MONTHS_IN_YEAR }, (_, i) => i + 1),
-  );
-
-  watch(
-    () => props.currentView,
-    async (newView) => {
-      if (newView === 'years') {
-        await nextTick();
-        scrollToCurrentYear();
-      }
-    },
   );
 
   const fontFamily = computed(() => {
@@ -170,41 +160,26 @@
     return fontMap[i18nStore.calendarType] || 'Arial, sans-serif';
   });
 
-  function getMonthName(month) {
-    return i18nStore.getMonthName(month);
-  }
+  const getMonthName = (month) => i18nStore.getMonthName(month);
 
-  function formatNumber(value) {
-    return toLocalizedNumbers(value, i18nStore.numberSystem);
-  }
+  const formatNumber = (value) => toLocalizedNumbers(value, i18nStore.numberSystem);
 
-  function onToggleView(view) {
-    emit('toggle-view', view);
-  }
+  const onToggleView = (view) => emit('toggle-view', view);
 
-  function selectMonth(month) {
-    emit('select-month', month);
-  }
+  const selectMonth = (month) => emit('select-month', month);
 
-  function selectYear(year) {
-    emit('select-year', year);
-  }
+  const selectYear = (year) => emit('select-year', year);
 
-  async function nextYearRange() {
+  const shiftYearRange = async (direction) => {
+    const method = direction === 'next' ? 'nextYear' : 'prevYear';
     for (let i = 0; i < CALENDAR_CONFIG.YEARS_TO_SHOW; i++) {
-      props.navigation.nextYear();
+      props.navigation[method]();
     }
     await nextTick();
     scrollToCurrentYear();
-  }
-
-  async function prevYearRange() {
-    for (let i = 0; i < CALENDAR_CONFIG.YEARS_TO_SHOW; i++) {
-      props.navigation.prevYear();
-    }
-    await nextTick();
-    scrollToCurrentYear();
-  }
+  };
+  const nextYearRange = () => shiftYearRange('next');
+  const prevYearRange = () => shiftYearRange('prev');
 
   function setYearRef(el, year) {
     if (el) {
@@ -212,20 +187,28 @@
     }
   }
 
-  function scrollToCurrentYear() {
-    const currentYearEl = yearButtonRefs.value[props.navigation.currentYear.value];
-    if (currentYearEl && currentYearEl.$el) {
-      currentYearEl.$el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }
-  }
+  const scrollToCurrentYear = () => {
+    const el = yearButtonRefs.value[props.navigation.currentYear.value]?.$el;
+    el?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  };
+
+  watch(
+    () => props.currentView,
+    async (newView) => {
+      if (newView === 'years') {
+        await nextTick();
+        scrollToCurrentYear();
+      }
+    },
+  );
 </script>
 
 <style lang="scss" scoped>
   .datepicker {
     &__header {
       @include flex(row, start, center);
-      font-weight: 400;
-      font-size: 12px;
+      font-weight: var(--datepicker-font-weight-normal);
+      font-size: var(--datepicker-font-size-12);
       width: 100%;
       &-close {
         cursor: pointer;
@@ -237,10 +220,10 @@
     }
 
     &__controls {
-      @include flex(row, space-between, center, 8px);
-      margin-bottom: 20px;
+      @include flex(row, space-between, center, var(--datepicker-spacing-8));
+      margin-bottom: var(--datepicker-spacing-20);
       &-btn {
-        height: 24px;
+        height: var(--datepicker-button-height);
         padding: 0;
         border: none;
       }
@@ -252,12 +235,11 @@
     &__months {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      row-gap: 12px;
+      row-gap: var(--datepicker-spacing-12);
       column-gap: 29px;
       width: 100%;
       &-btn--active {
-        background-color: $primary-500;
-        color: $white-100;
+        @include button-active;
       }
     }
 
@@ -268,41 +250,26 @@
 
     &__years {
       direction: ltr;
-      max-height: 256px;
+      max-height: var(--datepicker-years-max-height);
       overflow-y: auto;
       overflow-x: hidden;
-      padding-right: 12px;
-      @include flex(row, space-between, center, 12px, wrap);
+      padding-right: var(--datepicker-spacing-12);
+      @include flex(row, space-between, center, var(--datepicker-spacing-12), wrap);
+      @include custom-scrollbar;
 
-      &::-webkit-scrollbar {
-        width: 2px;
-      }
-
-      &::-webkit-scrollbar-track {
-        background: $primary-200;
-        border-radius: 10px;
-      }
-
-      &::-webkit-scrollbar-thumb {
-        background: $primary-300;
-        border-radius: 10px;
-        height: 48px;
-        width: 4px;
-      }
       &-btn--active {
-        background-color: $primary-500;
-        color: $white-100;
+        @include button-active;
       }
     }
 
     &__years-controls {
       @include flex(row, space-between, center);
-      height: 24px;
+      height: var(--datepicker-button-height);
       cursor: pointer;
-      margin-bottom: 20px;
+      margin-bottom: var(--datepicker-spacing-20);
       &-year {
-        font-weight: 400;
-        font-size: 12px;
+        font-weight: var(--datepicker-font-weight-normal);
+        font-size: var(--datepicker-font-size-12);
       }
     }
   }

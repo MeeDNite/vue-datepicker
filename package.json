@@ -9,14 +9,24 @@
   "module": "./dist/vue-datepicker.es.js",
   "exports": {
     ".": {
-      "import": "./dist/vue-datepicker.es.js",
-      "require": "./dist/vue-datepicker.umd.js"
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/vue-datepicker.es.js"
+      },
+      "require": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/vue-datepicker.umd.js"
+      }
     },
-    "./dist/vue-datepicker.css": "./dist/vue-datepicker.css",
-    "./dist/style.css": "./dist/vue-datepicker.css"
+    "./style.css": "./dist/style.css",
+    "./styles": "./src/assets/styles/abstracts/_index.scss",
+    "./styles/variables": "./src/assets/styles/abstracts/_css-variables.scss",
+    "./styles/mixins": "./src/assets/styles/abstracts/_mixins.scss"
   },
+  "style": "./dist/style.css",
   "files": [
-    "dist"
+    "dist",
+    "src/assets/styles"
   ],
   "keywords": [
     "vue",

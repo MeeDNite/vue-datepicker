@@ -2,7 +2,7 @@
   <div class="datepicker-content" :style="{ fontFamily: fontFamily }">
     <template v-if="props.currentView === 'days'">
       <div class="datepicker-content__weekdays">
-        <span v-for="weekday in WEEKDAYS" :key="weekday" class="datepicker-content__weekday">
+        <span v-for="weekday in weekDays" :key="weekday" class="datepicker-content__weekday">
           {{ weekday }}
         </span>
       </div>
@@ -114,10 +114,10 @@
     locale: selectedLocale,
   });
 
-  const WEEKDAYS = computed(() => i18nStore.locale?.weekdays || []);
+  const weekDays = computed(() => i18nStore.locale?.weekdays || []);
 
   const fontFamily = computed(() => {
-    const fontMap = {
+    const fontMap = { 
       jalali: 'IRANYekan',
       hijri: ' Arial, sans-serif',
       gregorian: 'Arial, sans-serif',
@@ -233,43 +233,40 @@
 </script>
 <style scoped lang="scss">
   .datepicker-content {
-    @include flex(column, space-between, normal, 20px);
-    margin-bottom: 20px;
+    @include flex(column, space-between, normal, var(--datepicker-spacing-20));
+    margin-bottom: var(--datepicker-spacing-20);
     &__weekdays {
-      display: grid;
-      grid-template-columns: repeat(7, 1fr);
-      gap: 16px;
-      font-size: 12px;
-      font-weight: 400;
-      background-color: $gray-50;
-      height: 16px;
+      @include datepicker-grid(7, var(--datepicker-grid-gap));
+      font-size: var(--datepicker-font-size-12);
+      font-weight: var(--datepicker-font-weight-normal);
+      background-color: var(--datepicker-gray-50);
+      height: var(--datepicker-weekday-height);
       width: 100%;
-      border-radius: 4px;
+      border-radius: var(--datepicker-radius-4);
       padding-left: 2px;
     }
 
     &__weekday {
       text-align: center;
-      font-size: 12px;
-      font-weight: 400;
+      font-size: var(--datepicker-font-size-12);
+      font-weight: var(--datepicker-font-weight-normal);
     }
 
     &__days {
       display: flex;
       flex-direction: column;
-      gap: 16px;
+      gap: var(--datepicker-grid-gap);
       position: relative;
     }
     &__week {
       display: grid;
-      grid-template-columns: repeat(7, 32px);
+      grid-template-columns: repeat(var(--datepicker-grid-columns), var(--datepicker-day-size));
       align-items: center;
-      row-gap: 16px;
-      column-gap: 0;
-      font-weight: 400;
-      font-size: 14px;
+      row-gap: var(--datepicker-grid-gap);
+      column-gap: var(--datepicker-grid-column-gap);
+      font-weight: var(--datepicker-font-weight-normal);
+      font-size: var(--datepicker-font-size-14);
       justify-content: space-between;
-      display: grid;
       position: relative;
 
       &::before {
@@ -279,46 +276,26 @@
         left: var(--gradient-start, 0%);
         width: calc(var(--gradient-end, 0%) - var(--gradient-start, 0%));
         height: 100%;
-        background: linear-gradient(270deg, #cee0fc 0%, rgba(206, 224, 252, 0.15) 100%);
+        background: linear-gradient(
+          270deg,
+          var(--datepicker-range-gradient-end) 0%,
+          var(--datepicker-range-gradient-start) 100%
+        );
         z-index: 0;
         pointer-events: none;
       }
     }
 
     &__day {
-      border-radius: 10px;
-      font-size: 14px;
-      font-weight: 400;
-      width: 32px;
-      height: 32px;
-      cursor: pointer;
-      @include flex(column, start, center);
-      position: relative;
-      font-family: inherit;
+      @include day-button-base;
 
       &--selected {
-        background-color: $primary-500;
-        color: $white-100;
-        border-radius: 10px;
+        @include day-selected;
       }
 
       &--range-start,
       &--range-end {
-        color: $white-100;
-        z-index: 1;
-
-        &::before {
-          content: '';
-          position: absolute;
-          top: 0;
-          left: 50%;
-          transform: translateX(-50%);
-          width: 32px;
-          height: 32px;
-          background-color: $primary-500;
-          border-radius: 10px;
-          z-index: -1;
-        }
+        @include day-range-marker;
       }
 
       &--range-start,
@@ -330,13 +307,13 @@
 
       &--prev-month,
       &--next-month {
-        color: $gray-300;
+        color: var(--datepicker-gray-300);
       }
 
       &-today-text {
-        color: $primary-400;
-        font-weight: 400;
-        font-size: 10px;
+        color: var(--datepicker-primary-400);
+        font-weight: var(--datepicker-font-weight-normal);
+        font-size: var(--datepicker-font-size-10);
       }
     }
   }

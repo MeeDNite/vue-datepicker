@@ -12,3 +12,81 @@
   gap: $gap;
   flex-wrap: $flexWrap;
 }
+
+@mixin datepicker-grid($columns: 7, $gap: 16px, $column-gap: null) {
+  display: grid;
+  grid-template-columns: repeat($columns, 1fr);
+  gap: $gap;
+
+  @if $column-gap {
+    column-gap: $column-gap;
+    row-gap: $gap;
+  }
+}
+
+@mixin day-button-base {
+  border-radius: var(--datepicker-radius-10);
+  font-size: var(--datepicker-font-size-14);
+  font-weight: var(--datepicker-font-weight-normal);
+  width: 100%;
+  height: var(--datepicker-day-size);
+  cursor: pointer;
+  @include flex(column, start, center);
+  position: relative;
+  font-family: inherit;
+}
+
+@mixin day-selected {
+  background-color: var(--datepicker-primary-500);
+  color: var(--datepicker-white);
+  border-radius: var(--datepicker-radius-10);
+}
+
+@mixin day-range-marker {
+  color: var(--datepicker-white);
+  z-index: 1;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: var(--datepicker-day-size);
+    height: var(--datepicker-day-size);
+    background-color: var(--datepicker-primary-500);
+    border-radius: var(--datepicker-radius-10);
+    z-index: -1;
+  }
+}
+
+@mixin custom-scrollbar {
+  &::-webkit-scrollbar {
+    width: var(--datepicker-scrollbar-width);
+  }
+
+  &::-webkit-scrollbar-track {
+    background: var(--datepicker-scrollbar-track-color);
+    border-radius: var(--datepicker-radius-10);
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: var(--datepicker-scrollbar-thumb-color);
+    border-radius: var(--datepicker-radius-10);
+    height: var(--datepicker-scrollbar-thumb-height);
+    width: var(--datepicker-scrollbar-width);
+  }
+}
+
+@mixin button-base {
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all var(--datepicker-transition-duration) var(--datepicker-transition-timing);
+}
+
+@mixin button-active {
+  background-color: var(--datepicker-primary-500);
+  color: var(--datepicker-white);
+}

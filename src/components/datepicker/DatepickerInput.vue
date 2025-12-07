@@ -1,17 +1,18 @@
 <template>
-  <main class="datepicker-wrapper">
-    <div class="datepicker-input-container">
+  <section class="datepicker">
+    <div class="datepicker__input-container">
       <BaseInput
         ref="inputRef"
         type="text"
-        class="datepicker-input"
+        class="datepicker__input"
         :model-value="formattedDate"
         :placeholder="computedPlaceholder"
-        :style="{ fontFamily: fontFamily }"
+        :style="{ fontFamily }"
         readonly
         @click="togglePicker"
       />
-      <BaseButton type="button" variant="icon" class="datepicker-input__icon" @click="togglePicker">
+
+      <BaseButton type="button" variant="icon" class="datepicker__input-icon" @click="togglePicker">
         <template #icon-left>
           <CalendarIcon />
         </template>
@@ -19,8 +20,8 @@
     </div>
 
     <Transition name="datepicker-fade">
-      <div v-if="isOpen" class="datepicker-overlay" @click="closePicker">
-        <div class="datepicker-container" @click.stop>
+      <div v-if="isOpen" class="datepicker__overlay" @click="closePicker">
+        <div class="datepicker__overlay-content" @click.stop>
           <DatePicker
             v-model="internalValue"
             :mode="mode"
@@ -40,7 +41,7 @@
         </div>
       </div>
     </Transition>
-  </main>
+  </section>
 </template>
 
 <script setup>
@@ -213,92 +214,92 @@
 </script>
 
 <style scoped lang="scss">
-  .datepicker-wrapper {
-    position: relative;
-    width: 250px;
-  }
-
-  .datepicker-input-container {
-    position: relative;
-    width: 100%;
-  }
-
-  .datepicker-input {
-    width: 100%;
-    padding: 12px 16px;
-    border: 1px solid $gray-200;
-    border-radius: 8px;
-    font-size: 14px;
-    font-variant-numeric: normal;
-    cursor: pointer;
-    transition: all 0.2s;
-    background-color: $white-100;
-
-    &:focus {
-      outline: none;
-      border-color: $primary-500;
+  .datepicker {
+    &-wrapper {
+      position: relative;
+      max-width: 250px;
     }
-    &::placeholder {
-      color: $gray-300;
+
+    &__input-container {
+      position: relative;
+      width: 100%;
     }
-  }
 
-  .datepicker-input__icon {
-    position: absolute;
-    left: 12px;
-    top: 50%;
-    transform: translateY(-50%);
-    background: transparent;
-    border: none;
-    cursor: pointer;
-    padding: 4px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: $gray-300;
-    transition: color 0.2s;
-  }
+    &__input {
+      width: 250px;
+      padding: 12px 16px;
+      border: 1px solid $gray-200;
+      border-radius: 8px;
+      font-size: 14px;
+      cursor: pointer;
+      background-color: $white-100;
+      transition: all 0.2s;
 
-  .datepicker-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: rgba(0, 0, 0, 0.5);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 1000;
-  }
+      &:focus {
+        outline: none;
+        border-color: $primary-500;
+      }
 
-  .datepicker-container {
-    position: relative;
-    z-index: 1001;
-  }
+      &::placeholder {
+        color: $gray-300;
+      }
 
-  .datepicker-fade-enter-active,
-  .datepicker-fade-leave-active {
-    transition: opacity 0.2s ease;
-  }
+      &-icon {
+        position: absolute;
+        left: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        padding: 4px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: $gray-300;
+        transition: color 0.2s;
 
-  .datepicker-fade-enter-from,
-  .datepicker-fade-leave-to {
-    opacity: 0;
-  }
+        &:hover {
+          color: $primary-500;
+        }
+      }
+    }
 
-  .datepicker-fade-enter-active .datepicker-container {
-    animation: slideUp 0.3s ease;
-  }
+    &__overlay {
+      position: fixed;
+      inset: 0;
+      background-color: rgba(0, 0, 0, 0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
 
-  @keyframes slideUp {
-    from {
-      transform: translateY(20px);
+      &-content {
+        position: relative;
+        z-index: 1001;
+        animation: slideUp 0.3s ease;
+      }
+    }
+
+    &-fade-enter-active,
+    &-fade-leave-active {
+      transition: opacity 0.2s ease;
+    }
+
+    &-fade-enter-from,
+    &-fade-leave-to {
       opacity: 0;
     }
-    to {
-      transform: translateY(0);
-      opacity: 1;
+
+    @keyframes slideUp {
+      from {
+        transform: translateY(20px);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
     }
   }
 </style>
