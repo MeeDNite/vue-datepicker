@@ -39,7 +39,7 @@
       :hours="time?.hours.value || []"
       :minutes="time?.minutes.value || []"
       :time-format="props.timeFormat"
-      :to-persian-numbers="toPersianNumbers"
+      :to-persian-numbers="formatNumber"
       @select-hour="selectHour"
       @select-minute="selectMinute"
       @toggle-period="togglePeriod"
@@ -139,7 +139,6 @@
   }
 
   const formatNumber = (value) => toLocalizedNumbers(value, i18nStore.numberSystem);
-  const toPersianNumbers = (value) => toLocalizedNumbers(value, i18nStore.numberSystem);
 
   function selectDay(dayObj) {
     if (dayObj.isDisabled) return;
