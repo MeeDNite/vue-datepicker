@@ -1,9 +1,29 @@
 # Vue Multi-Calendar Datepicker
 
-A comprehensive, feature-rich Vue 3 datepicker component with support for Jalali (Persian), Gregorian, Hijri, and Chinese calendars. Built with full TypeScript support and completely customizable styling.
+A comprehensive, feature-rich Vue 3 datepicker component with support for Jalali (Persian), Gregorian, Hijri, and Chinese calendars. **Styles are automatically included** - no separate CSS import needed!
 
 [![npm version](https://img.shields.io/npm/v/@mahlaparvaz/vue-datepicker.svg)](https://www.npmjs.com/package/@mahlaparvaz/vue-datepicker)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
+## 🚀 Key Highlights
+
+```vue
+<script setup>
+import { DatepickerInput } from '@mahlaparvaz/vue-datepicker';
+// That's it! No CSS imports, no v-model required
+</script>
+
+<template>
+  <DatepickerInput mode="range" :enable-time="true" />
+</template>
+```
+
+**What makes this special:**
+- ✨ **Zero Setup** - Just import and use
+- 💅 **Auto-Styled** - CSS automatically injected, no manual imports
+- 🎯 **v-model Optional** - Works with or without v-model binding
+- 🌍 **4 Calendars** - Jalali, Gregorian, Hijri, Chinese
+- ⚡ **Lightweight** - Optimized bundle with tree-shaking
 
 ## ✨ Features
 
@@ -14,9 +34,10 @@ A comprehensive, feature-rich Vue 3 datepicker component with support for Jalali
 - 🌐 **Internationalization**: Built-in support for multiple locales with easy switching
 - 📱 **Responsive**: Works seamlessly on desktop and mobile devices
 - ♿ **Accessible**: Keyboard navigation and ARIA labels
-- 🎯 **Type Safe**: Full TypeScript support
 - 🪶 **Lightweight**: Tree-shakeable and optimized bundle size
 - 🔧 **Flexible Date Constraints**: Min/max dates and dynamic year ranges
+- 🎯 **Zero Configuration**: Works out of the box without v-model (optional internal state management)
+- 💅 **Auto-Styled**: CSS automatically injected - no manual style imports needed!
 
 ## 📦 Installation
 
@@ -34,13 +55,29 @@ pnpm add @mahlaparvaz/vue-datepicker
 
 ## 🚀 Quick Start
 
-### Basic Usage
+### Zero Configuration Usage
+
+The datepicker works without any setup - just import and use! Styles are automatically injected.
+
+```vue
+<script setup>
+import { DatepickerInput } from '@mahlaparvaz/vue-datepicker';
+// That's it! No CSS imports, no v-model required
+</script>
+
+<template>
+  <DatepickerInput placeholder="Select a date" />
+</template>
+```
+
+### With v-model (Optional)
+
+If you need to access the selected date externally:
 
 ```vue
 <script setup>
 import { ref } from 'vue';
 import { DatepickerInput } from '@mahlaparvaz/vue-datepicker';
-// Styles are automatically included by most bundlers
 
 const selectedDate = ref(null);
 </script>
@@ -57,17 +94,13 @@ const selectedDate = ref(null);
 
 ```vue
 <script setup>
-import { ref } from 'vue';
 import { DatepickerInput } from '@mahlaparvaz/vue-datepicker';
-
-const selectedDate = ref(null);
 </script>
 
 <template>
   <DatepickerInput
-    v-model="selectedDate"
     locale="fa"
-    placeholder=" select date"
+    placeholder="انتخاب تاریخ"
   />
 </template>
 ```
@@ -78,16 +111,27 @@ const selectedDate = ref(null);
 
 ```vue
 <DatepickerInput
-  v-model="selectedDate"
   mode="single"
   locale="en"
+  placeholder="Select a date"
 />
 ```
 
 ### Date Range Selection
 
 ```vue
+<DatepickerInput
+  mode="range"
+  locale="fa"
+  placeholder="انتخاب بازه تاریخ"
+/>
+```
+
+**With v-model:**
+```vue
 <script setup>
+import { ref } from 'vue';
+
 const dateRange = ref({
   start: null,
   end: null
@@ -106,7 +150,17 @@ const dateRange = ref({
 ### Multiple Dates Selection
 
 ```vue
+<DatepickerInput
+  mode="multiple"
+  placeholder="Select multiple dates"
+/>
+```
+
+**With v-model:**
+```vue
 <script setup>
+import { ref } from 'vue';
+
 const multipleDates = ref([]);
 </script>
 
@@ -122,10 +176,10 @@ const multipleDates = ref([]);
 
 ```vue
 <DatepickerInput
-  v-model="selectedDateTime"
   :enable-time="true"
   :time-format="24"
   locale="fa"
+  placeholder="انتخاب تاریخ و زمان"
 />
 ```
 
@@ -133,7 +187,6 @@ const multipleDates = ref([]);
 
 ```vue
 <DatepickerInput
-  v-model="selectedDate"
   :years-before="10"
   :years-after="5"
   locale="fa"
@@ -143,14 +196,16 @@ const multipleDates = ref([]);
 ### Custom Calendar Type
 
 ```vue
+<!-- Hijri calendar -->
 <DatepickerInput
-  v-model="selectedDate"
-  locale="ar"  <!-- Hijri calendar -->
+  locale="ar"
+  placeholder="اختر التاريخ"
 />
 
+<!-- Chinese calendar -->
 <DatepickerInput
-  v-model="selectedDate"
-  locale="zh"  <!-- Chinese calendar -->
+  locale="zh"
+  placeholder="选择日期"
 />
 ```
 
@@ -160,9 +215,9 @@ const multipleDates = ref([]);
 
 | Prop | Type | Default | Description |
 |------|------|---------|-------------|
-| `modelValue` | `Object` | `null` | The selected date(s) |
+| `modelValue` | `Object` | `null` | **Optional** - The selected date(s). Component works without v-model using internal state |
 | `mode` | `'single' \| 'range' \| 'multiple'` | `'single'` | Selection mode |
-| `locale` | `String` | `'fa'` | Calendar locale (`'fa'`, `'en'`, `'ar'`, `'zh'`) |
+| `locale` | `String` | `null` | **Optional** - Calendar locale (`'fa'`, `'en'`, `'ar'`, `'zh'`). Auto-detected from store if not provided |
 | `placeholder` | `String` | Auto | Input placeholder text |
 | `format` | `String` | `'YYYY/MM/DD'` | Date format |
 | `enableTime` | `Boolean` | `false` | Enable time selection |
@@ -170,6 +225,8 @@ const multipleDates = ref([]);
 | `yearsBefore` | `Number` | `50` | Number of years before current year |
 | `yearsAfter` | `Number` | `50` | Number of years after current year |
 | `enableLocaleSelector` | `Boolean` | `true` | Show locale selector in picker |
+| `minDate` | `Date \| String` | `null` | Minimum selectable date |
+| `maxDate` | `Date \| String` | `null` | Maximum selectable date |
 
 ### Events
 
@@ -224,6 +281,26 @@ const multipleDates = ref([]);
 ```
 
 ## 🎨 Customization
+
+### Automatic Style Injection
+
+**No manual CSS import needed!** The component automatically injects its styles when imported. This means:
+
+✅ **Just works** - Import the component and styles are included
+✅ **No duplicate styles** - Styles are injected only once even with multiple instances
+✅ **SSR compatible** - Safe for server-side rendering
+✅ **No build config needed** - Works with Vite, Webpack, Rollup, etc.
+
+```vue
+<script setup>
+// Just import - styles are automatically included!
+import { DatepickerInput } from '@mahlaparvaz/vue-datepicker';
+</script>
+
+<template>
+  <DatepickerInput />
+</template>
+```
 
 ### CSS Variables
 
@@ -320,6 +397,14 @@ The datepicker uses CSS custom properties for easy theming:
 
 ### Dynamic Locale Switching
 
+Users can switch between calendars using the built-in locale selector (enabled by default):
+
+```vue
+<DatepickerInput :enable-locale-selector="true" />
+```
+
+Or control it programmatically:
+
 ```vue
 <script setup>
 const currentLocale = ref('fa');
@@ -336,6 +421,40 @@ const selectedDate = ref(null);
 ```
 
 ## 🔧 Advanced Features
+
+### Internal State Management (No v-model Required)
+
+The datepicker maintains its own internal state, so **v-model is completely optional**:
+
+```vue
+<script setup>
+import { DatepickerInput } from '@mahlaparvaz/vue-datepicker';
+
+// No ref needed! Component manages state internally
+// User can select dates and see them in the input
+</script>
+
+<template>
+  <!-- Works perfectly without v-model -->
+  <DatepickerInput
+    mode="range"
+    :enable-time="true"
+    placeholder="Select dates"
+  />
+</template>
+```
+
+**When to use v-model:**
+- ✅ When you need to access/manipulate selected dates externally
+- ✅ When you want to set an initial value programmatically
+- ✅ When you need to sync the value with other components
+- ❌ NOT required for basic date selection functionality
+
+**How it works:**
+- Component uses internal `ref` to store selected date(s)
+- Falls back to prop value if `v-model` is provided
+- Emits `update:modelValue` for optional parent synchronization
+- User selection is preserved and displayed regardless of v-model
 
 ### Validation
 
@@ -399,7 +518,7 @@ npm install
 npm run dev
 
 # Build library
-npm run build:lib
+npm run build
 
 # Run linter
 npm run lint
@@ -407,6 +526,57 @@ npm run lint
 # Format code
 npm run format
 ```
+
+## ❓ FAQ
+
+### Do I need to import CSS separately?
+
+**No!** Styles are automatically injected when you import the component. No manual CSS imports needed.
+
+### Can I use the datepicker without v-model?
+
+**Yes!** The component works perfectly without v-model. It maintains internal state automatically.
+
+```vue
+<!-- This works! -->
+<DatepickerInput placeholder="Select date" />
+```
+
+### How do I customize the theme?
+
+Override CSS variables in your global styles:
+
+```css
+:root {
+  --datepicker-primary-500: #your-color;
+  --datepicker-day-size: 40px;
+}
+```
+
+### Which calendars are supported?
+
+- **Jalali (Persian)**: `locale="fa"`
+- **Gregorian**: `locale="en"`
+- **Hijri (Islamic)**: `locale="ar"`
+- **Chinese**: `locale="zh"`
+
+### Does it work with TypeScript?
+
+While the library is written in JavaScript, it provides full type support through JSDoc comments and works seamlessly with TypeScript projects.
+
+### Is it SSR compatible?
+
+Yes! The component checks for `document` availability before injecting styles, making it safe for server-side rendering.
+
+### Can users switch between calendars?
+
+Yes! Enable the locale selector:
+
+```vue
+<DatepickerInput :enable-locale-selector="true" />
+```
+
+Users can switch between all supported calendars dynamically.
 
 ## 📄 License
 
