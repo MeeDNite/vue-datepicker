@@ -38,6 +38,7 @@ import { DatepickerInput } from '@mahlaparvaz/vue-datepicker';
 - 🔧 **Flexible Date Constraints**: Min/max dates and dynamic year ranges
 - 🎯 **Zero Configuration**: Works out of the box without v-model (optional internal state management)
 - 💅 **Auto-Styled**: CSS automatically injected - no manual style imports needed!
+- 📤 **Multiple Output Formats**: Object, timestamp, Unix, ISO string, custom string, or custom formatter function
 
 ## 📦 Installation
 
@@ -193,6 +194,158 @@ const multipleDates = ref([]);
 />
 ```
 
+### Output Formats
+
+The datepicker supports multiple output formats for flexibility in your application:
+
+#### Object Format (Default)
+
+Returns the raw date object:
+
+```vue
+<script setup>
+import { ref } from 'vue';
+import { DatepickerInput } from '@mahlaparvaz/vue-datepicker';
+
+const selectedDate = ref(null);
+// Output: { jy: 1403, jm: 9, jd: 18, hour: 14, minute: 30 }
+</script>
+
+<template>
+  <DatepickerInput
+    v-model="selectedDate"
+    output-format="object"
+  />
+</template>
+```
+
+#### Timestamp Format
+
+Returns JavaScript timestamp in milliseconds:
+
+```vue
+<script setup>
+import { ref } from 'vue';
+
+const selectedDate = ref(null);
+// Output: 1702905000000
+</script>
+
+<template>
+  <DatepickerInput
+    v-model="selectedDate"
+    output-format="timestamp"
+  />
+</template>
+```
+
+#### Unix Timestamp Format
+
+Returns Unix timestamp in seconds:
+
+```vue
+<DatepickerInput
+  v-model="selectedDate"
+  output-format="unix"
+/>
+<!-- Output: 1702905000 -->
+```
+
+#### ISO String Format
+
+Returns ISO 8601 formatted string:
+
+```vue
+<DatepickerInput
+  v-model="selectedDate"
+  output-format="iso"
+/>
+<!-- Output: "2023-12-18T14:30:00.000Z" -->
+```
+
+#### Custom String Format
+
+Returns a custom formatted string:
+
+```vue
+<DatepickerInput
+  v-model="selectedDate"
+  output-format="string"
+  output-string-format="YYYY-MM-DD HH:mm"
+/>
+<!-- Output: "1403-09-18 14:30" -->
+```
+
+Available format tokens:
+- `YYYY` - 4-digit year
+- `YY` - 2-digit year
+- `MM` - 2-digit month
+- `M` - Month without leading zero
+- `DD` - 2-digit day
+- `D` - Day without leading zero
+- `HH` - 2-digit hour
+- `H` - Hour without leading zero
+- `mm` - 2-digit minute
+- `m` - Minute without leading zero
+
+#### Custom Formatter Function
+
+Use a custom function for complete control:
+
+```vue
+<script setup>
+import { ref } from 'vue';
+
+const selectedDate = ref(null);
+
+const customFormatter = (date) => {
+  if (!date) return null;
+
+  // For range mode
+  if (date.start && date.end) {
+    return `From ${date.start.jy}/${date.start.jm}/${date.start.jd} to ${date.end.jy}/${date.end.jm}/${date.end.jd}`;
+  }
+
+  // For single mode
+  return `Custom: ${date.jy}-${date.jm}-${date.jd}`;
+};
+</script>
+
+<template>
+  <DatepickerInput
+    v-model="selectedDate"
+    :output-format="customFormatter"
+  />
+</template>
+```
+
+#### Using OUTPUT_FORMATS Constant
+
+For better type safety and code clarity:
+
+```vue
+<script setup>
+import { ref } from 'vue';
+import { DatepickerInput, OUTPUT_FORMATS } from '@mahlaparvaz/vue-datepicker';
+
+const selectedDate = ref(null);
+</script>
+
+<template>
+  <DatepickerInput
+    v-model="selectedDate"
+    :output-format="OUTPUT_FORMATS.TIMESTAMP"
+  />
+</template>
+```
+
+Available constants:
+- `OUTPUT_FORMATS.OBJECT` - Default object format
+- `OUTPUT_FORMATS.TIMESTAMP` - JavaScript timestamp (ms)
+- `OUTPUT_FORMATS.UNIX` - Unix timestamp (seconds)
+- `OUTPUT_FORMATS.ISO` - ISO 8601 string
+- `OUTPUT_FORMATS.STRING` - Custom formatted string
+
 ### Custom Calendar Type
 
 ```vue
@@ -219,7 +372,7 @@ const multipleDates = ref([]);
 | `mode` | `'single' \| 'range' \| 'multiple'` | `'single'` | Selection mode |
 | `locale` | `String` | `null` | **Optional** - Calendar locale (`'fa'`, `'en'`, `'ar'`, `'zh'`). Auto-detected from store if not provided |
 | `placeholder` | `String` | Auto | Input placeholder text |
-| `format` | `String` | `'YYYY/MM/DD'` | Date format |
+| `format` | `String` | `'YYYY/MM/DD'` | Date display format in the input field |
 | `enableTime` | `Boolean` | `false` | Enable time selection |
 | `timeFormat` | `Number \| String` | `24` | Time format (12 or 24) |
 | `yearsBefore` | `Number` | `50` | Number of years before current year |
@@ -227,6 +380,8 @@ const multipleDates = ref([]);
 | `enableLocaleSelector` | `Boolean` | `true` | Show locale selector in picker |
 | `minDate` | `Date \| String` | `null` | Minimum selectable date |
 | `maxDate` | `Date \| String` | `null` | Maximum selectable date |
+| `outputFormat` | `String \| Function` | `'object'` | Output format: `'object'`, `'timestamp'`, `'unix'`, `'iso'`, `'string'`, or custom function |
+| `outputStringFormat` | `String` | `'YYYY/MM/DD'` | String format when `outputFormat` is `'string'` |
 
 ### Events
 

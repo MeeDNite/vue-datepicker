@@ -1,21 +1,40 @@
 <template>
   <div class="datepicker">
-    <div class="datepicker__input-container">
-      <BaseInput
-        type="text"
-        class="datepicker__input"
-        :model-value="formattedDate"
-        :placeholder="computedPlaceholder"
-        :style="{ fontFamily }"
-        readonly
-        @click="togglePicker"
-      />
+    <div v-if="$slots.trigger" @click="handleTriggerClick">
+      <slot name="trigger" :open="togglePicker" :formatted-date="formattedDate" :is-open="isOpen" />
+    </div>
 
-      <BaseButton type="button" variant="icon" class="datepicker__input-icon" @click="togglePicker">
-        <template #icon-left>
-          <CalendarIcon />
-        </template>
-      </BaseButton>
+    <div v-else class="datepicker__input-container">
+      <slot
+        name="input"
+        :open="togglePicker"
+        :formatted-date="formattedDate"
+        :placeholder="computedPlaceholder"
+        :font-family="fontFamily"
+      >
+        <BaseInput
+          type="text"
+          class="datepicker__input"
+          :model-value="formattedDate"
+          :placeholder="computedPlaceholder"
+          :style="{ fontFamily }"
+          readonly
+          @click="handleInputClick"
+        />
+      </slot>
+
+      <slot name="icon" :open="togglePicker" :is-open="isOpen">
+        <BaseButton
+          type="button"
+          variant="icon"
+          class="datepicker__input-icon"
+          @click="handleIconClick"
+        >
+          <template #icon-left>
+            <CalendarIcon />
+          </template>
+        </BaseButton>
+      </slot>
     </div>
 
     <Transition name="datepicker-fade">
@@ -51,6 +70,7 @@
   import BaseButton from '../base/BaseButton.vue';
   import { useI18nStore } from '@/store/i18n';
   import { formatSingleDate, formatRangeDate, formatMultipleDates } from '@/utils/datepicker/dateDisplay';
+  import { transformOutput } from '@/utils/datepicker/outputFormatter';
 
   const props = defineProps({
     modelValue: {
@@ -101,6 +121,27 @@
     enableLocaleSelector: {
       type: Boolean,
       default: true,
+    },
+    outputFormat: {
+      type: [String, Function],
+      default: 'object',
+      validator: (value) => {
+        if (typeof value === 'function') return true;
+        return ['object', 'timestamp', 'unix', 'iso', 'string'].includes(value);
+      },
+    },
+    outputStringFormat: {
+      type: String,
+      default: 'YYYY/MM/DD',
+    },
+    triggerOn: {
+      type: String,
+      default: 'both',
+      validator: (value) => ['input', 'icon', 'both', 'trigger'].includes(value),
+    },
+    disabled: {
+      type: Boolean,
+      default: false,
     },
   });
 
@@ -153,6 +194,7 @@
   });
 
   const togglePicker = () => {
+    if (props.disabled) return;
     isOpen.value = !isOpen.value;
     emit(isOpen.value ? 'open' : 'close');
   };
@@ -162,23 +204,47 @@
     emit('close');
   }
 
+  const handleInputClick = () => {
+    if (props.triggerOn === 'input' || props.triggerOn === 'both') {
+      togglePicker();
+    }
+  };
+
+  const handleIconClick = () => {
+    if (props.triggerOn === 'icon' || props.triggerOn === 'both') {
+      togglePicker();
+    }
+  };
+
+  const handleTriggerClick = () => {
+    if (props.triggerOn === 'trigger') {
+      togglePicker();
+    }
+  };
+
   const internalState = ref(props.modelValue);
 
   function handleConfirm(date) {
     internalState.value = date;
-    emit('update:modelValue', date);
-    emit('confirm', date);
+    const transformedDate = transformOutput(date, props.outputFormat, props.outputStringFormat);
+    emit('update:modelValue', transformedDate);
+    emit('confirm', transformedDate);
     closePicker();
   }
 
-  const handleChange = (date) => emit('change', date);
+  const handleChange = (date) => {
+    const transformedDate = transformOutput(date, props.outputFormat, props.outputStringFormat);
+    emit('change', transformedDate);
+  };
+
   const handleLocaleChange = (newLocale) => emit('update:locale', newLocale);
 
   const internalValue = computed({
     get: () => props.modelValue ?? internalState.value,
     set: (val) => {
       internalState.value = val;
-      emit('update:modelValue', val);
+      const transformedVal = transformOutput(val, props.outputFormat, props.outputStringFormat);
+      emit('update:modelValue', transformedVal);
     },
   });
 </script>
