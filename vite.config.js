@@ -1,6 +1,7 @@
 import { defineConfig } from 'vite';
 import vue from '@vitejs/plugin-vue';
 import { resolve } from 'path';
+import { visualizer } from 'rollup-plugin-visualizer';
 
 function cssInjectedByJsPlugin() {
   let cssCode = '';
@@ -63,7 +64,16 @@ function cssInjectedByJsPlugin() {
 }
 
 export default defineConfig({
-  plugins: [vue(), cssInjectedByJsPlugin()],
+  plugins: [
+    vue(),
+    cssInjectedByJsPlugin(),
+    visualizer({
+      filename: 'dist/stats.html',
+      open: false,
+      gzipSize: true,
+      brotliSize: true,
+    }),
+  ],
   resolve: {
     alias: {
       '@': resolve(__dirname, 'src'),
@@ -86,11 +96,24 @@ export default defineConfig({
       fileName: (format) => `vue-datepicker.${format}.js`,
     },
     cssCodeSplit: false,
+    minify: 'terser',
+    terserOptions: {
+      compress: {
+        drop_console: true,
+        drop_debugger: true,
+        pure_funcs: ['console.log', 'console.info', 'console.debug'],
+      },
+      format: {
+        comments: false,
+      },
+    },
     rollupOptions: {
       external: ['vue'],
       output: {
         globals: { vue: 'Vue' },
         exports: 'named',
+        compact: true,
+        manualChunks: undefined,
       },
     },
   },
