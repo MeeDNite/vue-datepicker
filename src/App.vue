@@ -1,6 +1,6 @@
 <script setup>
   import { ref } from 'vue';
-  import DatepickerHeadless from './components/datepicker/DatepickerHeadless.vue';
+import DatepickerHeadless from './components/datepicker/DatepickerHeadless.vue';
 
   const simpleDate = ref(null);
   const customFontDate = ref(null);

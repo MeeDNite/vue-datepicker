@@ -1,44 +1,57 @@
 # Vue Multi-Calendar Datepicker
 
-A comprehensive, feature-rich Vue 3 datepicker component with support for Jalali (Persian), Gregorian, Hijri, and Chinese calendars. **Styles are automatically included** - no separate CSS import needed!
+A comprehensive, feature-rich Vue 3 datepicker component with support for Jalali (Persian), Gregorian, Hijri, and Chinese calendars. **Headless architecture** with custom font support and an incredibly lightweight bundle!
 
 [![npm version](https://img.shields.io/npm/v/@mahlaparvaz/vue-datepicker.svg)](https://www.npmjs.com/package/@mahlaparvaz/vue-datepicker)
+[![Bundle Size](https://img.shields.io/bundlephobia/minzip/@mahlaparvaz/vue-datepicker)](https://bundlephobia.com/package/@mahlaparvaz/vue-datepicker)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 ## 🚀 Key Highlights
 
 ```vue
 <script setup>
-import { DatepickerInput } from '@mahlaparvaz/vue-datepicker';
-// That's it! No CSS imports, no v-model required
+import DatepickerHeadless from '@mahlaparvaz/vue-datepicker';
+// That's it! Only ~24KB gzipped
 </script>
 
 <template>
-  <DatepickerInput mode="range" :enable-time="true" />
+  <DatepickerHeadless
+    v-model="date"
+    :font-config="{ jalali: 'Vazir', gregorian: 'Roboto' }"
+  >
+    <template #default="{ open, formattedDate, fontFamily }">
+      <input :value="formattedDate" :style="{ fontFamily }" @click="open" />
+    </template>
+  </DatepickerHeadless>
 </template>
 ```
 
 **What makes this special:**
-- ✨ **Zero Setup** - Just import and use
+- 🪶 **Ultra Lightweight** - Only **24KB gzipped** (one of the smallest Vue datepickers!)
+- 🎨 **Headless Architecture** - Full UI control via scoped slots
+- 🔤 **Custom Font Support** - Built-in font configuration for any locale
 - 💅 **Auto-Styled** - CSS automatically injected, no manual imports
 - 🎯 **v-model Optional** - Works with or without v-model binding
 - 🌍 **4 Calendars** - Jalali, Gregorian, Hijri, Chinese
-- ⚡ **Lightweight** - Optimized bundle with tree-shaking
+- ⚡ **Tree-shakeable** - Optimized bundle with tree-shaking
 
 ## ✨ Features
 
+- 🎨 **Headless Architecture**: Full UI control via scoped slots - build your own trigger element
+- 🔤 **Custom Font Support**: Built-in font configuration for any locale via `fontConfig` prop
+- 🪶 **Ultra Lightweight**: Only **24KB gzipped** - one of the smallest Vue datepickers!
 - 🌍 **Multi-Calendar Support**: Jalali (Persian), Gregorian, Hijri, and Chinese calendars
 - 📅 **Multiple Selection Modes**: Single date, date range, and multiple dates
 - ⏰ **Time Picker**: Optional time selection with 12/24-hour format
-- 🎨 **Fully Customizable**: CSS variables and SCSS mixins for complete style control
 - 🌐 **Internationalization**: Built-in support for multiple locales with easy switching
-- 📱 **Responsive**: Works seamlessly on desktop and mobile devices
-- ♿ **Accessible**: Keyboard navigation and ARIA labels
-- 🪶 **Lightweight**: Tree-shakeable and optimized bundle size
-- 🔧 **Flexible Date Constraints**: Min/max dates and dynamic year ranges
 - 🎯 **Zero Configuration**: Works out of the box without v-model (optional internal state management)
 - 💅 **Auto-Styled**: CSS automatically injected - no manual style imports needed!
 - 📤 **Multiple Output Formats**: Object, timestamp, Unix, ISO string, custom string, or custom formatter function
+- 🎨 **Fully Customizable**: CSS variables and SCSS mixins for complete style control
+- 📱 **Responsive**: Works seamlessly on desktop and mobile devices
+- ♿ **Accessible**: Keyboard navigation and ARIA labels
+- ⚡ **Tree-shakeable**: Optimized bundle with tree-shaking support
+- 🔧 **Flexible Date Constraints**: Min/max dates and dynamic year ranges
 
 ## 📦 Installation
 
@@ -56,9 +69,35 @@ pnpm add @mahlaparvaz/vue-datepicker
 
 ## 🚀 Quick Start
 
-### Zero Configuration Usage
+### Headless Component (Full UI Control)
 
-The datepicker works without any setup - just import and use! Styles are automatically injected.
+The datepicker uses a **headless architecture** - you control the trigger UI completely via scoped slots:
+
+```vue
+<script setup>
+import { ref } from 'vue';
+import DatepickerHeadless from '@mahlaparvaz/vue-datepicker';
+
+const selectedDate = ref(null);
+</script>
+
+<template>
+  <DatepickerHeadless v-model="selectedDate">
+    <template #default="{ open, formattedDate, fontFamily }">
+      <input
+        :value="formattedDate"
+        :style="{ fontFamily }"
+        @click="open"
+        placeholder="Select a date"
+      />
+    </template>
+  </DatepickerHeadless>
+</template>
+```
+
+### Pre-built Input Component
+
+For quick implementation, use the pre-styled input component:
 
 ```vue
 <script setup>
@@ -103,6 +142,208 @@ import { DatepickerInput } from '@mahlaparvaz/vue-datepicker';
     locale="fa"
     placeholder="انتخاب تاریخ"
   />
+</template>
+```
+
+## 🔤 Custom Font Configuration
+
+Fonts are **NOT included** in the bundle by default to keep the package lightweight (only 24KB gzipped). You can easily add your own fonts!
+
+### Option 1: Using `fontConfig` Prop (Recommended)
+
+```vue
+<script setup>
+import { ref } from 'vue';
+import DatepickerHeadless from '@mahlaparvaz/vue-datepicker';
+
+const date = ref(null);
+
+const customFonts = {
+  jalali: 'Vazir, IRANYekan, sans-serif',
+  gregorian: 'Roboto, Arial, sans-serif',
+  hijri: 'Amiri, serif',
+  chinese: 'Noto Sans SC, sans-serif'
+};
+</script>
+
+<template>
+  <DatepickerHeadless
+    v-model="date"
+    :font-config="customFonts"
+  >
+    <template #default="{ open, formattedDate, fontFamily }">
+      <button
+        @click="open"
+        :style="{ fontFamily }"
+      >
+        {{ formattedDate || 'Select Date' }}
+      </button>
+    </template>
+  </DatepickerHeadless>
+</template>
+```
+
+### Option 2: Load Fonts via CDN
+
+Add fonts from a CDN in your HTML:
+
+```html
+<!-- In your index.html -->
+<head>
+  <!-- For Persian (Jalali/Hijri) -->
+  <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazir-font@v30.1.0/dist/font-face.css" rel="stylesheet">
+
+  <!-- For other languages -->
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+</head>
+```
+
+Then use them in your config:
+
+```vue
+<DatepickerHeadless
+  :font-config="{ jalali: 'Vazir, sans-serif', gregorian: 'Roboto, sans-serif' }"
+/>
+```
+
+### Default Fonts
+
+If no `fontConfig` is provided, the datepicker uses these fallback fonts:
+
+- **Jalali**: `IRANYekan, sans-serif`
+- **Hijri**: `IRANYekan, sans-serif`
+- **Gregorian**: `Arial, sans-serif`
+- **Chinese**: `Microsoft YaHei, SimHei, sans-serif`
+
+**For a complete font configuration guide**, see [FONTS.md](./FONTS.md)
+
+## 📦 Bundle Size
+
+One of the smallest Vue datepicker packages available:
+
+| Format | Size | Gzipped |
+|--------|------|---------|
+| ES Module | 109 KB | **24 KB** |
+| UMD | 76 KB | **18 KB** |
+
+**How we keep it small:**
+- 🚫 No fonts included by default (you provide your own)
+- ⚡ Tree-shakeable ES modules
+- 🗜️ Aggressive minification with Terser
+- 📦 CSS injected directly into JS bundle
+- 🎯 Vue marked as external dependency
+
+## 🎨 Headless Component Examples
+
+The `DatepickerHeadless` component provides complete UI flexibility. You control the trigger element via the default scoped slot.
+
+### Available Slot Props
+
+| Prop | Type | Description |
+|------|------|-------------|
+| `open` | `Function` | Opens the datepicker overlay |
+| `close` | `Function` | Closes the datepicker overlay |
+| `toggle` | `Function` | Toggles the datepicker overlay |
+| `formattedDate` | `String` | Formatted date string for display |
+| `fontFamily` | `String` | Current font family based on calendar type and fontConfig |
+| `isOpen` | `Boolean` | Whether the datepicker is currently open |
+
+### Custom Button Trigger
+
+```vue
+<script setup>
+import { ref } from 'vue';
+import DatepickerHeadless from '@mahlaparvaz/vue-datepicker';
+
+const date = ref(null);
+</script>
+
+<template>
+  <DatepickerHeadless v-model="date" locale="fa">
+    <template #default="{ open, formattedDate, fontFamily }">
+      <button
+        @click="open"
+        :style="{ fontFamily }"
+        class="custom-button"
+      >
+        📅 {{ formattedDate || 'انتخاب تاریخ' }}
+      </button>
+    </template>
+  </DatepickerHeadless>
+</template>
+```
+
+### Custom Input with Icon
+
+```vue
+<template>
+  <DatepickerHeadless v-model="date" :font-config="{ jalali: 'Vazir' }">
+    <template #default="{ open, formattedDate, fontFamily, isOpen }">
+      <div class="input-wrapper">
+        <input
+          :value="formattedDate"
+          :style="{ fontFamily }"
+          @click="open"
+          placeholder="Select date"
+          readonly
+        />
+        <svg v-if="!isOpen" class="icon" @click="open">
+          <!-- Calendar icon -->
+        </svg>
+        <svg v-else class="icon" @click="close">
+          <!-- Close icon -->
+        </svg>
+      </div>
+    </template>
+  </DatepickerHeadless>
+</template>
+```
+
+### With Form Integration
+
+```vue
+<script setup>
+import { ref } from 'vue';
+import DatepickerHeadless from '@mahlaparvaz/vue-datepicker';
+
+const form = ref({
+  startDate: null,
+  endDate: null
+});
+</script>
+
+<template>
+  <form @submit.prevent="handleSubmit">
+    <div class="form-group">
+      <label>Start Date:</label>
+      <DatepickerHeadless v-model="form.startDate" mode="single">
+        <template #default="{ open, formattedDate, fontFamily }">
+          <input
+            :value="formattedDate"
+            :style="{ fontFamily }"
+            @click="open"
+            placeholder="Select start date"
+          />
+        </template>
+      </DatepickerHeadless>
+    </div>
+
+    <div class="form-group">
+      <label>End Date:</label>
+      <DatepickerHeadless v-model="form.endDate" mode="single">
+        <template #default="{ open, formattedDate, fontFamily }">
+          <input
+            :value="formattedDate"
+            :style="{ fontFamily }"
+            @click="open"
+            placeholder="Select end date"
+          />
+        </template>
+      </DatepickerHeadless>
+    </div>
+
+    <button type="submit">Submit</button>
+  </form>
 </template>
 ```
 
@@ -373,6 +614,7 @@ Available constants:
 | `locale` | `String` | `null` | **Optional** - Calendar locale (`'fa'`, `'en'`, `'ar'`, `'zh'`). Auto-detected from store if not provided |
 | `placeholder` | `String` | Auto | Input placeholder text |
 | `format` | `String` | `'YYYY/MM/DD'` | Date display format in the input field |
+| `fontConfig` | `Object` | `null` | Custom font configuration for different calendar types. Example: `{ jalali: 'Vazir', gregorian: 'Roboto', hijri: 'Amiri', chinese: 'Noto Sans SC' }` |
 | `enableTime` | `Boolean` | `false` | Enable time selection |
 | `timeFormat` | `Number \| String` | `24` | Time format (12 or 24) |
 | `yearsBefore` | `Number` | `50` | Number of years before current year |
@@ -696,6 +938,50 @@ npm run format
 <!-- This works! -->
 <DatepickerInput placeholder="Select date" />
 ```
+
+### How do I use custom fonts?
+
+Use the `fontConfig` prop to specify fonts for each calendar type:
+
+```vue
+<DatepickerHeadless
+  :font-config="{
+    jalali: 'Vazir, sans-serif',
+    gregorian: 'Roboto, Arial, sans-serif'
+  }"
+>
+  <template #default="{ open, formattedDate, fontFamily }">
+    <input :value="formattedDate" :style="{ fontFamily }" @click="open" />
+  </template>
+</DatepickerHeadless>
+```
+
+See [FONTS.md](./FONTS.md) for detailed font configuration options including CDN loading, NPM packages, and more.
+
+### Why are fonts not included by default?
+
+To keep the bundle size small! Including all font files would add ~200KB to the package. By letting you provide your own fonts via CDN, NPM, or custom configuration, we keep the package at only **24KB gzipped**.
+
+### What's the bundle size?
+
+One of the smallest Vue datepicker packages:
+- **ES Module**: 109 KB (24 KB gzipped)
+- **UMD**: 76 KB (18 KB gzipped)
+
+### What is the headless architecture?
+
+The headless component (`DatepickerHeadless`) provides all the logic and state management without imposing any UI. You control exactly how the trigger element looks using scoped slots:
+
+```vue
+<DatepickerHeadless v-model="date">
+  <template #default="{ open, formattedDate, fontFamily }">
+    <!-- Your custom button, input, or any element -->
+    <button @click="open">{{ formattedDate }}</button>
+  </template>
+</DatepickerHeadless>
+```
+
+For a pre-styled option, use `DatepickerInput`.
 
 ### How do I customize the theme?
 
