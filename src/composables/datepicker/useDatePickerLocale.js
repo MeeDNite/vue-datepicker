@@ -22,25 +22,12 @@ export function useDatePickerLocale(initialLocale = 'jalali  ') {
     }
   }
 
-  function getMonthName(month) {
-    return localeManager.getMonthName(month, currentLocale.value);
-  }
-
-  function getWeekdayName(weekday) {
-    return localeManager.getWeekdayName(weekday, currentLocale.value);
-  }
-
-  function getWeekdayFullName(weekday) {
-    return localeManager.getWeekdayFullName(weekday, currentLocale.value);
-  }
-
-  function getText(key) {
-    return localeManager.getText(key, currentLocale.value);
-  }
-
-  function formatNumber(value) {
-    return toLocalizedNumbers(value, numberSystem.value);
-  }
+  const getMonthName = (month) => localeManager.getMonthName(month, currentLocale.value);
+  const getWeekdayName = (weekday) => localeManager.getWeekdayName(weekday, currentLocale.value);
+  const getWeekdayFullName = (weekday) =>
+    localeManager.getWeekdayFullName(weekday, currentLocale.value);
+  const getText = (key) => localeManager.getText(key, currentLocale.value);
+  const formatNumber = (value) => toLocalizedNumbers(value, numberSystem.value);
 
   return {
     currentLocale,

@@ -7,6 +7,7 @@
       :enable-locale-selector="enableLocaleSelector"
       :locale="currentLocale"
       :navigation="navigation"
+      :font-config="props.fontConfig"
       @close="handleClose"
       @toggle-view="toggleView"
       @update:locale="handleLocaleUpdate"
@@ -25,6 +26,7 @@
       :enable-locale-selector="props.enableLocaleSelector"
       :current-view="navigation.currentView.value"
       :navigation="navigation"
+      :font-config="props.fontConfig"
       @update:selected-date="handleChange"
       @update:range-selection="handleChange"
       @update:multiple-selection="handleChange"
@@ -55,6 +57,10 @@
     enableTime: { type: Boolean, default: false },
     timeFormat: { type: [String, Number], default: 24 },
     enableLocaleSelector: { type: Boolean, default: true },
+    fontConfig: {
+      type: Object,
+      default: null,
+    },
   });
 
   const emit = defineEmits([

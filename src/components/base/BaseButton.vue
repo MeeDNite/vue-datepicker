@@ -1,3 +1,13 @@
+<template>
+  <button :type="props.type" :class="buttonClass" :disabled="props.disabled">
+    <span class="button__icon button__icon--left"><slot name="icon-left" /></span>
+    <span class="button__label"
+      ><slot>{{ label }}</slot></span
+    >
+    <span class="button__icon button__icon--right"><slot name="icon-right" /></span>
+  </button>
+</template>
+
 <script setup>
   import { computed } from 'vue';
 
@@ -18,23 +28,13 @@
   ]);
 </script>
 
-<template>
-  <button :type="props.type" :class="buttonClass" :disabled="props.disabled">
-    <span class="button__icon button__icon--left"><slot name="icon-left" /></span>
-    <span class="button__label"
-      ><slot>{{ label }}</slot></span
-    >
-    <span class="button__icon button__icon--right"><slot name="icon-right" /></span>
-  </button>
-</template>
-
 <style lang="scss">
   .button {
     @include flex(inline-flex, center, center, 8px);
     border: 0;
     border-radius: $radius-12;
     cursor: pointer;
-    font-family: 'IRANYekan';
+    font-family: inherit;
     font-size: 16px;
     font-weight: 600;
     padding: 8px 16px;

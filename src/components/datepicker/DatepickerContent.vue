@@ -71,6 +71,7 @@
     enableLocaleSelector: { type: Boolean, default: true },
     currentView: { type: String, default: 'days' },
     navigation: { type: Object, default: null },
+    fontConfig: { type: Object, default: null },
   });
 
   const emit = defineEmits([
@@ -116,14 +117,16 @@
 
   const weekDays = computed(() => i18nStore.locale?.weekdays || []);
 
+  const DEFAULT_FONT_MAP = {
+    jalali: 'IRANYekan',
+    hijri: 'IRANYekan',
+    gregorian: 'Arial, sans-serif',
+    chinese: 'Microsoft YaHei, SimHei, sans-serif',
+  };
+
   const fontFamily = computed(() => {
-    const fontMap = { 
-      jalali: 'IRANYekan',
-      hijri: ' Arial, sans-serif',
-      gregorian: 'Arial, sans-serif',
-      chinese: 'Microsoft YaHei, SimHei, sans-serif',
-    };
-    return fontMap[i18nStore.calendarType] || 'Arial, sans-serif';
+    const fonts = { ...DEFAULT_FONT_MAP, ...props.fontConfig };
+    return fonts[i18nStore.calendarType] || 'Arial, sans-serif';
   });
 
   function getDayClasses(day) {

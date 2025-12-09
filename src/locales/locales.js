@@ -50,7 +50,7 @@ export const LOCALE_DEFINITIONS = {
 
   gregorian: {
     code: 'gregorian',
-    name: 'میلادی',
+    name: 'miladi',
     direction: 'ltr',
     months: [
       'January',
@@ -99,7 +99,7 @@ export const LOCALE_DEFINITIONS = {
 
   hijri: {
     code: 'hijri',
-    name: 'هجری قمری',
+    name: 'hijri',
     direction: 'rtl',
     months: [
       'محرم',
@@ -148,7 +148,7 @@ export const LOCALE_DEFINITIONS = {
 
   chinese: {
     code: 'chinese',
-    name: 'چینی',
+    name: 'chinese',
     direction: 'ltr',
     months: [
       '一月',

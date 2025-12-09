@@ -188,12 +188,10 @@ export const transformOutput = (
 ) => {
   if (!value) return null;
 
-  // Custom formatter callback
   if (typeof outputFormat === 'function') {
     return outputFormat(value);
   }
 
-  // Range mode
   if (value.start && value.end) {
     return {
       start: transformSingleDate(value.start, outputFormat, stringFormat),
@@ -201,12 +199,10 @@ export const transformOutput = (
     };
   }
 
-  // Multiple mode
   if (Array.isArray(value)) {
     return value.map((d) => transformSingleDate(d, outputFormat, stringFormat));
   }
 
-  // Single date
   return transformSingleDate(value, outputFormat, stringFormat);
 };
 

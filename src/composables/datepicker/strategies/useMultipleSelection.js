@@ -3,7 +3,6 @@ import { parseMultipleDates, isSameDate, sortDates } from '@/utils/datepicker';
 
 export function useMultipleSelection(initialValue = null) {
   const dates = ref(parseMultipleDates(initialValue));
-
   const count = computed(() => dates.value.length);
 
   function select(date) {
@@ -17,9 +16,7 @@ export function useMultipleSelection(initialValue = null) {
   }
 
   const isSelected = (date) => dates.value.some((d) => isSameDate(d, date));
-
   const getValue = () => sortDates(dates.value.map((d) => ({ ...d })));
-
   const remove = (date) => (dates.value = dates.value.filter((d) => !isSameDate(d, date)));
 
   const clear = () => {

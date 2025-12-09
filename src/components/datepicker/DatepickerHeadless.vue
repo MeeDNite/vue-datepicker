@@ -23,6 +23,7 @@
           :enable-time="enableTime"
           :time-format="timeFormat"
           :enable-locale-selector="enableLocaleSelector"
+          :font-config="fontConfig"
           @confirm="handleConfirm"
           @change="handleChange"
           @close="close"
@@ -102,6 +103,15 @@
       type: Boolean,
       default: false,
     },
+    fontConfig: {
+      type: Object,
+      default: null,
+      validator: (value) => {
+        if (!value) return true;
+        const validKeys = ['jalali', 'hijri', 'gregorian', 'chinese'];
+        return Object.keys(value).every((key) => validKeys.includes(key));
+      },
+    },
   });
 
   const emit = defineEmits([
@@ -132,6 +142,7 @@
     mode: props.mode,
     format: props.format,
     enableTime: props.enableTime,
+    fontConfig: props.fontConfig,
   });
 
   defineExpose({

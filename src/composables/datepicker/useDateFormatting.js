@@ -15,6 +15,7 @@ import {
  * @param {'single'|'range'|'multiple'} [options.mode='single'] - Date selection mode.
  * @param {string} [options.format='YYYY/MM/DD'] - Date format string.
  * @param {boolean} [options.enableTime=false] - Whether to include time in formatting.
+ * @param {Object} [options.fontConfig=null] - Custom font configuration for different calendar types.
  *
  * @returns {Object} Reactive utilities for date formatting.
  * @returns {import('vue').ComputedRef<string>} return.formattedDate - Formatted date string.
@@ -25,7 +26,7 @@ import {
 export const useDateFormatting = (value, options = {}) => {
   const i18nStore = useI18nStore();
 
-  const { mode = 'single', format = 'YYYY/MM/DD', enableTime = false } = options;
+  const { mode = 'single', format = 'YYYY/MM/DD', enableTime = false, fontConfig = null } = options;
 
   const numberSystem = computed(() => i18nStore.numberSystem);
   const calendarType = computed(() => i18nStore.calendarType);
@@ -52,7 +53,7 @@ export const useDateFormatting = (value, options = {}) => {
     }
   });
 
-  const FONT_MAP = {
+  const DEFAULT_FONT_MAP = {
     jalali: 'IRANYekan',
     hijri: 'IRANYekan',
     gregorian: 'Arial, sans-serif',
@@ -60,7 +61,8 @@ export const useDateFormatting = (value, options = {}) => {
   };
 
   const fontFamily = computed(() => {
-    return FONT_MAP[calendarType.value] || 'Arial, sans-serif';
+    const fonts = { ...DEFAULT_FONT_MAP, ...fontConfig };
+    return fonts[calendarType.value] || 'Arial, sans-serif';
   });
 
   return {

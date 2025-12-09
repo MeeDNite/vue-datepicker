@@ -108,10 +108,8 @@ export function createDatePickerContext(options = {}) {
   return context;
 }
 
-export function useDatePickerContext() {
-  const context = inject(DatePickerContextKey);
-
-  return context;
+export function useDatePickerContext  () {
+  return inject(DatePickerContextKey);
 }
 
 export function hasDatePickerContext() {
