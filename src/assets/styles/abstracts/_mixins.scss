@@ -73,10 +73,6 @@
     border-radius: radius(10);
     height: scroll(thumb-height);
     width: scroll(width);
-
-    &:hover {
-      background: color.adjust(scroll(thumb-color), 10%);
-    }
   }
 }
 

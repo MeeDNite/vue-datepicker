@@ -66,7 +66,7 @@
 
     &--medium {
       font-size: font-size(16);
-      font-weight: font-weight(semibold);
+      font-weight: font-weight(normal);
     }
 
     &--large {
