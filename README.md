@@ -11,7 +11,6 @@ A comprehensive, feature-rich Vue 3 datepicker component with support for Jalali
 ```vue
 <script setup>
 import DatepickerHeadless from '@mahlaparvaz/vue-datepicker';
-// That's it! Only ~24KB gzipped
 </script>
 
 <template>
@@ -95,9 +94,9 @@ const selectedDate = ref(null);
 </template>
 ```
 
-### Pre-built Input Component
+### Alternative: DatepickerInput Component
 
-For quick implementation, use the pre-styled input component:
+For quick implementation with a pre-styled input, the package also exports a `DatepickerInput` component:
 
 ```vue
 <script setup>
@@ -110,6 +109,8 @@ import { DatepickerInput } from '@mahlaparvaz/vue-datepicker';
 </template>
 ```
 
+**Note:** The recommended approach is using `DatepickerHeadless` for maximum flexibility.
+
 ### With v-model (Optional)
 
 If you need to access the selected date externally:
@@ -117,16 +118,22 @@ If you need to access the selected date externally:
 ```vue
 <script setup>
 import { ref } from 'vue';
-import { DatepickerInput } from '@mahlaparvaz/vue-datepicker';
+import DatepickerHeadless from '@mahlaparvaz/vue-datepicker';
 
 const selectedDate = ref(null);
 </script>
 
 <template>
-  <DatepickerInput
-    v-model="selectedDate"
-    placeholder="Select a date"
-  />
+  <DatepickerHeadless v-model="selectedDate">
+    <template #default="{ open, formattedDate, fontFamily }">
+      <input
+        :value="formattedDate"
+        :style="{ fontFamily }"
+        @click="open"
+        placeholder="Select a date"
+      />
+    </template>
+  </DatepickerHeadless>
 </template>
 ```
 
@@ -134,14 +141,20 @@ const selectedDate = ref(null);
 
 ```vue
 <script setup>
-import { DatepickerInput } from '@mahlaparvaz/vue-datepicker';
+import DatepickerHeadless from '@mahlaparvaz/vue-datepicker';
 </script>
 
 <template>
-  <DatepickerInput
-    locale="fa"
-    placeholder="انتخاب تاریخ"
-  />
+  <DatepickerHeadless locale="fa">
+    <template #default="{ open, formattedDate, fontFamily }">
+      <input
+        :value="formattedDate"
+        :style="{ fontFamily }"
+        @click="open"
+        placeholder="انتخاب تاریخ"
+      />
+    </template>
+  </DatepickerHeadless>
 </template>
 ```
 
@@ -219,35 +232,140 @@ If no `fontConfig` is provided, the datepicker uses these fallback fonts:
 
 ## 🎨 Theming & Customization
 
-The datepicker provides two powerful ways to customize its appearance:
+The datepicker provides **two powerful and flexible ways** to customize its appearance. You can either set global defaults for all datepickers in your app, or apply custom themes to specific instances.
 
-### Option 1: Global CSS Variables (Recommended for App-Wide Styling)
+---
 
-Override CSS variables in your global styles to customize all datepicker instances:
+### 🎯 Quick Overview
+
+| Method | Use Case | Scope | Priority |
+|--------|----------|-------|----------|
+| **Global CSS Variables** | App-wide consistent styling | All datepickers | Low (overridden by theme prop) |
+| **Theme Prop** | Per-instance customization | Single datepicker | High (overrides CSS variables) |
+
+---
+
+### Option 1: Global CSS Variables (App-Wide Styling)
+
+**Best for:** Setting default styles that apply to all datepickers in your application.
+
+#### Step 1: Create a Theme File
+
+Create a CSS file with your custom theme:
 
 ```css
-/* In your global CSS file (e.g., app.css) */
+/* styles/datepicker-theme.css */
 :root {
-  /* Colors */
-  --datepicker-primary-500: #e91e63;
+  /* Primary Colors */
   --datepicker-primary-600: #c2185b;
+  --datepicker-primary-500: #e91e63;  /* Main primary color */
+  --datepicker-primary-400: #f06292;
+  --datepicker-primary-300: #f48fb1;
+  --datepicker-primary-200: #f8bbd0;
+
+  /* Gray/Background Colors */
+  --datepicker-gray-300: #616161;
+  --datepicker-gray-200: #e0e0e0;
+  --datepicker-gray-100: #f5f5f5;  /* Main background */
+  --datepicker-gray-50: #fafafa;
+
+  /* Text Colors */
+  --datepicker-text-primary: #1a1a1a;
+  --datepicker-white: #ffffff;
 
   /* Dimensions */
-  --datepicker-width: 400px;
-  --datepicker-day-size: 40px;
+  --datepicker-width: 400px;          /* Datepicker width */
+  --datepicker-day-size: 40px;        /* Day cell size */
+  --datepicker-button-height: 28px;   /* Button height */
+  --datepicker-weekday-height: 20px;  /* Weekday header height */
+  --datepicker-years-max-height: 280px; /* Year list max height */
 
   /* Border Radius */
-  --datepicker-radius-8: 12px;
-  --datepicker-radius-10: 16px;
+  --datepicker-radius-4: 4px;
+  --datepicker-radius-8: 12px;        /* Medium radius */
+  --datepicker-radius-10: 16px;       /* Large radius */
+  --datepicker-radius-12: 20px;
 
   /* Spacing */
-  --datepicker-spacing-16: 20px;
+  --datepicker-spacing-4: 4px;
+  --datepicker-spacing-8: 8px;
+  --datepicker-spacing-12: 12px;
+  --datepicker-spacing-16: 20px;      /* Main spacing */
+  --datepicker-spacing-20: 24px;
+  --datepicker-spacing-24: 28px;
+
+  /* Font Sizes */
+  --datepicker-font-size-10: 11px;
+  --datepicker-font-size-12: 13px;
+  --datepicker-font-size-14: 15px;    /* Main font size */
+  --datepicker-font-size-16: 17px;
+
+  /* Font Weights */
+  --datepicker-font-weight-normal: 400;
+  --datepicker-font-weight-medium: 500;
+  --datepicker-font-weight-semibold: 600;
+
+  /* Grid */
+  --datepicker-grid-columns: 7;       /* Days of week */
+  --datepicker-grid-gap: 16px;
+  --datepicker-grid-column-gap: 0;
+
+  /* Transitions */
+  --datepicker-transition-duration: 0.2s;
+  --datepicker-transition-timing: ease-in-out;
+
+  /* Range Selection */
+  --datepicker-range-gradient-start: rgba(206, 224, 252, 0.15);
+  --datepicker-range-gradient-end: #cee0fc;
+
+  /* Scrollbar */
+  --datepicker-scrollbar-width: 3px;
+  --datepicker-scrollbar-thumb-height: 48px;
+  --datepicker-scrollbar-track-color: #cee0fc;
+  --datepicker-scrollbar-thumb-color: #84b3fe;
 }
 ```
 
-### Option 2: Theme Prop (For Per-Instance Styling)
+#### Step 2: Import in Your App
 
-Pass a `theme` object to specific datepicker instances:
+```js
+// main.js or main.ts
+import { createApp } from 'vue';
+import App from './App.vue';
+import './styles/datepicker-theme.css'; // Import your custom theme
+
+createApp(App).mount('#app');
+```
+
+#### Step 3: Use the Datepicker
+
+Now all datepickers in your app will use your custom theme:
+
+```vue
+<template>
+  <!-- No theme prop needed - uses global CSS variables -->
+  <DatepickerHeadless v-model="date">
+    <template #default="{ open, formattedDate }">
+      <button @click="open">{{ formattedDate || 'Select Date' }}</button>
+    </template>
+  </DatepickerHeadless>
+</template>
+```
+
+#### ✅ Advantages
+
+- Set once, apply everywhere
+- No need to pass props to each datepicker
+- Easy to maintain consistent design across your app
+- Works with all component variants (DatepickerHeadless, DatepickerInput)
+
+---
+
+### Option 2: Theme Prop (Per-Instance Styling)
+
+**Best for:** Customizing specific datepicker instances with unique styles.
+
+#### Step 1: Create a Theme Object
 
 ```vue
 <script setup>
@@ -256,17 +374,67 @@ import DatepickerHeadless from '@mahlaparvaz/vue-datepicker';
 
 const customTheme = ref({
   colors: {
-    primary: '#e91e63',
-    primaryLight: '#f06292',
-    primaryDark: '#c2185b'
+    primary: '#e91e63',           // Main color
+    primaryDark: '#c2185b',       // Hover/active states
+    primaryLight: '#f06292',      // Light variants
+    primaryLighter: '#f48fb1',    // Lighter variants
+    primaryLightest: '#f8bbd0',   // Lightest variants
+    gray: '#616161',              // Dark text
+    grayLight: '#e0e0e0',         // Borders
+    grayLighter: '#f5f5f5',       // Background
+    grayLightest: '#fafafa',      // Lightest background
+    textPrimary: '#1a1a1a',       // Primary text color
+    white: '#ffffff'              // White color
   },
   dimensions: {
-    width: '400px',
-    daySize: '40px'
+    width: '400px',               // Datepicker width
+    daySize: '40px',              // Day cell size
+    buttonHeight: '28px',         // Button height
+    weekdayHeight: '20px'         // Weekday header height
   },
   radius: {
-    medium: '12px',
-    large: '16px'
+    small: '4px',                 // Small elements
+    medium: '12px',               // Medium elements
+    large: '16px',                // Large elements (days)
+    xlarge: '20px'                // Extra large
+  },
+  spacing: {
+    xs: '4px',                    // Extra small
+    sm: '8px',                    // Small
+    md: '12px',                   // Medium
+    lg: '20px',                   // Large (main spacing)
+    xl: '24px',                   // Extra large
+    xxl: '28px'                   // Double extra large
+  },
+  fontSize: {
+    xs: '11px',                   // Extra small text
+    sm: '13px',                   // Small text
+    md: '15px',                   // Normal text
+    lg: '17px'                    // Large text
+  },
+  fontWeight: {
+    normal: '400',                // Normal weight
+    medium: '500',                // Medium weight
+    semibold: '600'               // Bold weight
+  },
+  grid: {
+    columns: '7',                 // Days of week
+    gap: '16px',                  // Gap between cells
+    columnGap: '0'                // Column gap
+  },
+  transitions: {
+    duration: '0.2s',             // Animation duration
+    timing: 'ease-in-out'         // Animation timing
+  },
+  range: {
+    gradientStart: 'rgba(233, 30, 99, 0.15)',  // Range start color
+    gradientEnd: '#f8bbd0'                      // Range end color
+  },
+  scrollbar: {
+    width: '3px',                 // Scrollbar width
+    thumbHeight: '48px',          // Thumb height
+    trackColor: '#f8bbd0',        // Track color
+    thumbColor: '#f06292'         // Thumb color
   }
 });
 </script>
@@ -280,44 +448,316 @@ const customTheme = ref({
 </template>
 ```
 
-### Dark Mode Example
+#### Step 2: Partial Theme (Override Only What You Need)
+
+You don't need to specify all properties - only override what you want:
+
+```vue
+<script setup>
+// Simple pink theme - only change colors
+const pinkTheme = {
+  colors: {
+    primary: '#e91e63',
+    primaryDark: '#c2185b'
+  }
+};
+
+// Larger datepicker - only change dimensions
+const largeTheme = {
+  dimensions: {
+    width: '450px',
+    daySize: '48px'
+  }
+};
+
+// More rounded corners - only change radius
+const roundedTheme = {
+  radius: {
+    medium: '16px',
+    large: '20px'
+  }
+};
+</script>
+
+<template>
+  <DatepickerHeadless :theme="pinkTheme">
+    <template #default="{ open, formattedDate }">
+      <button @click="open">Pink Theme</button>
+    </template>
+  </DatepickerHeadless>
+
+  <DatepickerHeadless :theme="largeTheme">
+    <template #default="{ open, formattedDate }">
+      <button @click="open">Large Theme</button>
+    </template>
+  </DatepickerHeadless>
+</template>
+```
+
+#### ✅ Advantages
+
+- Per-instance customization
+- Dynamic theme switching at runtime
+- Multiple themes in the same app
+- Partial overrides - only change what you need
+
+---
+
+### 🌙 Dark Mode Implementation
+
+#### Method 1: CSS Media Query (Automatic)
+
+```css
+/* styles/datepicker-theme.css */
+:root {
+  --datepicker-primary-500: #2f7bf5;
+  --datepicker-gray-100: #ffffff;
+  --datepicker-gray-200: #f5f5f5;
+  --datepicker-text-primary: #1a1a1a;
+}
+
+/* Automatically switch to dark mode */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --datepicker-primary-500: #84b3fe;
+    --datepicker-gray-100: #1e1e1e;
+    --datepicker-gray-200: #2a2a2a;
+    --datepicker-gray-50: #2e2e2e;
+    --datepicker-text-primary: #ffffff;
+    --datepicker-white: #1a1a1a;
+  }
+}
+```
+
+#### Method 2: Class-Based Dark Mode
+
+```css
+/* Light mode (default) */
+:root {
+  --datepicker-primary-500: #2f7bf5;
+  --datepicker-gray-100: #ffffff;
+}
+
+/* Dark mode class */
+.dark-mode {
+  --datepicker-primary-500: #84b3fe;
+  --datepicker-gray-100: #1e1e1e;
+  --datepicker-gray-200: #2a2a2a;
+  --datepicker-text-primary: #ffffff;
+}
+```
+
+```vue
+<script setup>
+import { ref } from 'vue';
+import DatepickerHeadless from '@mahlaparvaz/vue-datepicker';
+
+const isDark = ref(false);
+const date = ref(null);
+</script>
+
+<template>
+  <div :class="{ 'dark-mode': isDark }">
+    <button @click="isDark = !isDark">Toggle Dark Mode</button>
+    <DatepickerHeadless v-model="date">
+      <template #default="{ open, formattedDate }">
+        <button @click="open">{{ formattedDate || 'Select Date' }}</button>
+      </template>
+    </DatepickerHeadless>
+  </div>
+</template>
+```
+
+#### Method 3: Dynamic Theme Prop
 
 ```vue
 <script setup>
 import { ref, computed } from 'vue';
+import DatepickerHeadless from '@mahlaparvaz/vue-datepicker';
 
 const isDarkMode = ref(false);
+
+const lightTheme = {
+  colors: {
+    primary: '#2f7bf5',
+    grayLighter: '#ffffff',
+    grayLight: '#f5f5f5',
+    gray: '#5a5a5a',
+    textPrimary: '#1a1a1a'
+  }
+};
 
 const darkTheme = {
   colors: {
     primary: '#84b3fe',
     grayLighter: '#1e1e1e',
     grayLight: '#2a2a2a',
-    textPrimary: '#ffffff'
+    grayLightest: '#2e2e2e',
+    gray: '#e0e0e0',
+    textPrimary: '#ffffff',
+    white: '#1a1a1a'
   }
 };
 
-const lightTheme = {
-  colors: {
-    primary: '#2f7bf5',
-    grayLighter: '#ffffff',
-    textPrimary: '#1a1a1a'
-  }
-};
-
+// Reactive theme that switches based on isDarkMode
 const currentTheme = computed(() => isDarkMode.value ? darkTheme : lightTheme);
+
+const toggleDarkMode = () => {
+  isDarkMode.value = !isDarkMode.value;
+};
 </script>
 
 <template>
-  <DatepickerHeadless :theme="currentTheme">
-    <template #default="{ open, formattedDate }">
-      <button @click="open">{{ formattedDate }}</button>
-    </template>
-  </DatepickerHeadless>
+  <div>
+    <button @click="toggleDarkMode">
+      {{ isDarkMode ? '☀️ Light Mode' : '🌙 Dark Mode' }}
+    </button>
+
+    <DatepickerHeadless :theme="currentTheme">
+      <template #default="{ open, formattedDate }">
+        <button @click="open">{{ formattedDate || 'Select Date' }}</button>
+      </template>
+    </DatepickerHeadless>
+  </div>
 </template>
 ```
 
-**For complete theming documentation**, see [THEMING.md](./THEMING.md)
+---
+
+### 🎨 Multiple Themes Example
+
+Use different themes for different datepickers in the same app:
+
+```vue
+<script setup>
+import { ref } from 'vue';
+import DatepickerHeadless from '@mahlaparvaz/vue-datepicker';
+
+const blueTheme = {
+  colors: {
+    primary: '#2196f3',
+    primaryDark: '#1976d2'
+  }
+};
+
+const greenTheme = {
+  colors: {
+    primary: '#4caf50',
+    primaryDark: '#388e3c'
+  }
+};
+
+const orangeTheme = {
+  colors: {
+    primary: '#ff9800',
+    primaryDark: '#f57c00'
+  }
+};
+
+const startDate = ref(null);
+const endDate = ref(null);
+const eventDate = ref(null);
+</script>
+
+<template>
+  <div class="date-pickers">
+    <!-- Blue theme for start date -->
+    <div class="picker-group">
+      <label>Start Date</label>
+      <DatepickerHeadless v-model="startDate" :theme="blueTheme">
+        <template #default="{ open, formattedDate }">
+          <button @click="open">{{ formattedDate || 'Select Start' }}</button>
+        </template>
+      </DatepickerHeadless>
+    </div>
+
+    <!-- Green theme for end date -->
+    <div class="picker-group">
+      <label>End Date</label>
+      <DatepickerHeadless v-model="endDate" :theme="greenTheme">
+        <template #default="{ open, formattedDate }">
+          <button @click="open">{{ formattedDate || 'Select End' }}</button>
+        </template>
+      </DatepickerHeadless>
+    </div>
+
+    <!-- Orange theme for event date -->
+    <div class="picker-group">
+      <label>Event Date</label>
+      <DatepickerHeadless v-model="eventDate" :theme="orangeTheme">
+        <template #default="{ open, formattedDate }">
+          <button @click="open">{{ formattedDate || 'Select Event' }}</button>
+        </template>
+      </DatepickerHeadless>
+    </div>
+  </div>
+</template>
+```
+
+---
+
+### 📋 Complete Theme Properties Reference
+
+| Category | Property | CSS Variable | Default | Description |
+|----------|----------|--------------|---------|-------------|
+| **Colors** | `colors.primary` | `--datepicker-primary-500` | `#2f7bf5` | Main primary color |
+| | `colors.primaryDark` | `--datepicker-primary-600` | `#2471eb` | Darker shade for hover |
+| | `colors.primaryLight` | `--datepicker-primary-400` | `#2d89e9` | Lighter shade |
+| | `colors.primaryLighter` | `--datepicker-primary-300` | `#84b3fe` | Even lighter |
+| | `colors.primaryLightest` | `--datepicker-primary-200` | `#cee0fc` | Lightest shade |
+| | `colors.gray` | `--datepicker-gray-300` | `#5a5a5a` | Dark gray text |
+| | `colors.grayLight` | `--datepicker-gray-200` | `#dadce5` | Light gray borders |
+| | `colors.grayLighter` | `--datepicker-gray-100` | `#f6f8ff` | Background color |
+| | `colors.grayLightest` | `--datepicker-gray-50` | `#fafafa` | Lightest background |
+| | `colors.textPrimary` | `--datepicker-text-primary` | `#f4f4f4` | Primary text |
+| | `colors.white` | `--datepicker-white` | `#fff` | White color |
+| **Dimensions** | `dimensions.width` | `--datepicker-width` | `360px` | Datepicker width |
+| | `dimensions.daySize` | `--datepicker-day-size` | `32px` | Day cell size |
+| | `dimensions.buttonHeight` | `--datepicker-button-height` | `24px` | Button height |
+| | `dimensions.weekdayHeight` | `--datepicker-weekday-height` | `16px` | Weekday height |
+| **Radius** | `radius.small` | `--datepicker-radius-4` | `4px` | Small radius |
+| | `radius.medium` | `--datepicker-radius-8` | `8px` | Medium radius |
+| | `radius.large` | `--datepicker-radius-10` | `10px` | Large radius |
+| | `radius.xlarge` | `--datepicker-radius-12` | `12px` | XL radius |
+| **Spacing** | `spacing.xs` | `--datepicker-spacing-4` | `4px` | Extra small |
+| | `spacing.sm` | `--datepicker-spacing-8` | `8px` | Small |
+| | `spacing.md` | `--datepicker-spacing-12` | `12px` | Medium |
+| | `spacing.lg` | `--datepicker-spacing-16` | `16px` | Large |
+| | `spacing.xl` | `--datepicker-spacing-20` | `20px` | Extra large |
+| | `spacing.xxl` | `--datepicker-spacing-24` | `24px` | XXL |
+| **Font Size** | `fontSize.xs` | `--datepicker-font-size-10` | `10px` | Extra small |
+| | `fontSize.sm` | `--datepicker-font-size-12` | `12px` | Small |
+| | `fontSize.md` | `--datepicker-font-size-14` | `14px` | Medium |
+| | `fontSize.lg` | `--datepicker-font-size-16` | `16px` | Large |
+| **Font Weight** | `fontWeight.normal` | `--datepicker-font-weight-normal` | `400` | Normal |
+| | `fontWeight.medium` | `--datepicker-font-weight-medium` | `500` | Medium |
+| | `fontWeight.semibold` | `--datepicker-font-weight-semibold` | `600` | Semibold |
+
+---
+
+### 💡 Best Practices
+
+1. **For consistent app-wide styling:** Use global CSS variables
+2. **For unique instances:** Use the theme prop
+3. **For dark mode:** Use CSS media queries or class-based approach
+4. **Combine both:** Set global defaults, override with theme prop when needed
+5. **Partial themes:** Only specify properties you want to change
+
+---
+
+### 🔍 Troubleshooting
+
+**Theme not applying?**
+- Make sure you're using `:theme` (with colon) not `theme`
+- Check that theme object property names are correct
+- Verify CSS variables are properly imported
+
+**Global CSS not working?**
+- Import your theme CSS file after the datepicker styles
+- Use `:root` selector for global scope
+- Check CSS variable names match exactly
+
+**For complete theming documentation and more examples**, see [THEMING.md](./THEMING.md)
 
 ## 📦 Bundle Size
 
@@ -454,27 +894,49 @@ const form = ref({
 ### Single Date Selection
 
 ```vue
-<DatepickerInput
-  mode="single"
-  locale="en"
-  placeholder="Select a date"
-/>
+<script setup>
+import DatepickerHeadless from '@mahlaparvaz/vue-datepicker';
+</script>
+
+<template>
+  <DatepickerHeadless mode="single" locale="en">
+    <template #default="{ open, formattedDate }">
+      <input
+        :value="formattedDate"
+        @click="open"
+        placeholder="Select a date"
+      />
+    </template>
+  </DatepickerHeadless>
+</template>
 ```
 
 ### Date Range Selection
 
 ```vue
-<DatepickerInput
-  mode="range"
-  locale="fa"
-  placeholder="انتخاب بازه تاریخ"
-/>
+<script setup>
+import DatepickerHeadless from '@mahlaparvaz/vue-datepicker';
+</script>
+
+<template>
+  <DatepickerHeadless mode="range" locale="fa">
+    <template #default="{ open, formattedDate, fontFamily }">
+      <input
+        :value="formattedDate"
+        :style="{ fontFamily }"
+        @click="open"
+        placeholder="انتخاب بازه تاریخ"
+      />
+    </template>
+  </DatepickerHeadless>
+</template>
 ```
 
 **With v-model:**
 ```vue
 <script setup>
 import { ref } from 'vue';
+import DatepickerHeadless from '@mahlaparvaz/vue-datepicker';
 
 const dateRange = ref({
   start: null,
@@ -483,58 +945,109 @@ const dateRange = ref({
 </script>
 
 <template>
-  <DatepickerInput
-    v-model="dateRange"
-    mode="range"
-    locale="fa"
-  />
+  <DatepickerHeadless v-model="dateRange" mode="range" locale="fa">
+    <template #default="{ open, formattedDate, fontFamily }">
+      <input
+        :value="formattedDate"
+        :style="{ fontFamily }"
+        @click="open"
+        placeholder="انتخاب بازه تاریخ"
+      />
+    </template>
+  </DatepickerHeadless>
 </template>
 ```
 
 ### Multiple Dates Selection
 
 ```vue
-<DatepickerInput
-  mode="multiple"
-  placeholder="Select multiple dates"
-/>
+<script setup>
+import DatepickerHeadless from '@mahlaparvaz/vue-datepicker';
+</script>
+
+<template>
+  <DatepickerHeadless mode="multiple">
+    <template #default="{ open, formattedDate }">
+      <input
+        :value="formattedDate"
+        @click="open"
+        placeholder="Select multiple dates"
+      />
+    </template>
+  </DatepickerHeadless>
+</template>
 ```
 
 **With v-model:**
 ```vue
 <script setup>
 import { ref } from 'vue';
+import DatepickerHeadless from '@mahlaparvaz/vue-datepicker';
 
 const multipleDates = ref([]);
 </script>
 
 <template>
-  <DatepickerInput
-    v-model="multipleDates"
-    mode="multiple"
-  />
+  <DatepickerHeadless v-model="multipleDates" mode="multiple">
+    <template #default="{ open, formattedDate }">
+      <input
+        :value="formattedDate"
+        @click="open"
+        placeholder="Select multiple dates"
+      />
+    </template>
+  </DatepickerHeadless>
 </template>
 ```
 
 ### With Time Picker
 
 ```vue
-<DatepickerInput
-  :enable-time="true"
-  :time-format="24"
-  locale="fa"
-  placeholder="انتخاب تاریخ و زمان"
-/>
+<script setup>
+import DatepickerHeadless from '@mahlaparvaz/vue-datepicker';
+</script>
+
+<template>
+  <DatepickerHeadless
+    :enable-time="true"
+    :time-format="24"
+    locale="fa"
+  >
+    <template #default="{ open, formattedDate, fontFamily }">
+      <input
+        :value="formattedDate"
+        :style="{ fontFamily }"
+        @click="open"
+        placeholder="انتخاب تاریخ و زمان"
+      />
+    </template>
+  </DatepickerHeadless>
+</template>
 ```
 
 ### With Date Constraints
 
 ```vue
-<DatepickerInput
-  :years-before="10"
-  :years-after="5"
-  locale="fa"
-/>
+<script setup>
+import DatepickerHeadless from '@mahlaparvaz/vue-datepicker';
+</script>
+
+<template>
+  <DatepickerHeadless
+    :years-before="10"
+    :years-after="5"
+    locale="fa"
+  >
+    <template #default="{ open, formattedDate, fontFamily }">
+      <input
+        :value="formattedDate"
+        :style="{ fontFamily }"
+        @click="open"
+        placeholder="انتخاب تاریخ"
+      />
+    </template>
+  </DatepickerHeadless>
+</template>
 ```
 
 ### Output Formats
@@ -548,17 +1061,21 @@ Returns the raw date object:
 ```vue
 <script setup>
 import { ref } from 'vue';
-import { DatepickerInput } from '@mahlaparvaz/vue-datepicker';
+import DatepickerHeadless from '@mahlaparvaz/vue-datepicker';
 
 const selectedDate = ref(null);
 // Output: { jy: 1403, jm: 9, jd: 18, hour: 14, minute: 30 }
 </script>
 
 <template>
-  <DatepickerInput
+  <DatepickerHeadless
     v-model="selectedDate"
     output-format="object"
-  />
+  >
+    <template #default="{ open, formattedDate }">
+      <input :value="formattedDate" @click="open" />
+    </template>
+  </DatepickerHeadless>
 </template>
 ```
 
@@ -569,16 +1086,21 @@ Returns JavaScript timestamp in milliseconds:
 ```vue
 <script setup>
 import { ref } from 'vue';
+import DatepickerHeadless from '@mahlaparvaz/vue-datepicker';
 
 const selectedDate = ref(null);
 // Output: 1702905000000
 </script>
 
 <template>
-  <DatepickerInput
+  <DatepickerHeadless
     v-model="selectedDate"
     output-format="timestamp"
-  />
+  >
+    <template #default="{ open, formattedDate }">
+      <input :value="formattedDate" @click="open" />
+    </template>
+  </DatepickerHeadless>
 </template>
 ```
 
@@ -587,11 +1109,24 @@ const selectedDate = ref(null);
 Returns Unix timestamp in seconds:
 
 ```vue
-<DatepickerInput
-  v-model="selectedDate"
-  output-format="unix"
-/>
-<!-- Output: 1702905000 -->
+<script setup>
+import { ref } from 'vue';
+import DatepickerHeadless from '@mahlaparvaz/vue-datepicker';
+
+const selectedDate = ref(null);
+// Output: 1702905000
+</script>
+
+<template>
+  <DatepickerHeadless
+    v-model="selectedDate"
+    output-format="unix"
+  >
+    <template #default="{ open, formattedDate }">
+      <input :value="formattedDate" @click="open" />
+    </template>
+  </DatepickerHeadless>
+</template>
 ```
 
 #### ISO String Format
@@ -599,11 +1134,24 @@ Returns Unix timestamp in seconds:
 Returns ISO 8601 formatted string:
 
 ```vue
-<DatepickerInput
-  v-model="selectedDate"
-  output-format="iso"
-/>
-<!-- Output: "2023-12-18T14:30:00.000Z" -->
+<script setup>
+import { ref } from 'vue';
+import DatepickerHeadless from '@mahlaparvaz/vue-datepicker';
+
+const selectedDate = ref(null);
+// Output: "2023-12-18T14:30:00.000Z"
+</script>
+
+<template>
+  <DatepickerHeadless
+    v-model="selectedDate"
+    output-format="iso"
+  >
+    <template #default="{ open, formattedDate }">
+      <input :value="formattedDate" @click="open" />
+    </template>
+  </DatepickerHeadless>
+</template>
 ```
 
 #### Custom String Format
@@ -611,12 +1159,25 @@ Returns ISO 8601 formatted string:
 Returns a custom formatted string:
 
 ```vue
-<DatepickerInput
-  v-model="selectedDate"
-  output-format="string"
-  output-string-format="YYYY-MM-DD HH:mm"
-/>
-<!-- Output: "1403-09-18 14:30" -->
+<script setup>
+import { ref } from 'vue';
+import DatepickerHeadless from '@mahlaparvaz/vue-datepicker';
+
+const selectedDate = ref(null);
+// Output: "1403-09-18 14:30"
+</script>
+
+<template>
+  <DatepickerHeadless
+    v-model="selectedDate"
+    output-format="string"
+    output-string-format="YYYY-MM-DD HH:mm"
+  >
+    <template #default="{ open, formattedDate }">
+      <input :value="formattedDate" @click="open" />
+    </template>
+  </DatepickerHeadless>
+</template>
 ```
 
 Available format tokens:
@@ -638,6 +1199,7 @@ Use a custom function for complete control:
 ```vue
 <script setup>
 import { ref } from 'vue';
+import DatepickerHeadless from '@mahlaparvaz/vue-datepicker';
 
 const selectedDate = ref(null);
 
@@ -655,10 +1217,14 @@ const customFormatter = (date) => {
 </script>
 
 <template>
-  <DatepickerInput
+  <DatepickerHeadless
     v-model="selectedDate"
     :output-format="customFormatter"
-  />
+  >
+    <template #default="{ open, formattedDate }">
+      <input :value="formattedDate" @click="open" />
+    </template>
+  </DatepickerHeadless>
 </template>
 ```
 
@@ -669,16 +1235,20 @@ For better type safety and code clarity:
 ```vue
 <script setup>
 import { ref } from 'vue';
-import { DatepickerInput, OUTPUT_FORMATS } from '@mahlaparvaz/vue-datepicker';
+import DatepickerHeadless, { OUTPUT_FORMATS } from '@mahlaparvaz/vue-datepicker';
 
 const selectedDate = ref(null);
 </script>
 
 <template>
-  <DatepickerInput
+  <DatepickerHeadless
     v-model="selectedDate"
     :output-format="OUTPUT_FORMATS.TIMESTAMP"
-  />
+  >
+    <template #default="{ open, formattedDate }">
+      <input :value="formattedDate" @click="open" />
+    </template>
+  </DatepickerHeadless>
 </template>
 ```
 
@@ -692,17 +1262,35 @@ Available constants:
 ### Custom Calendar Type
 
 ```vue
-<!-- Hijri calendar -->
-<DatepickerInput
-  locale="ar"
-  placeholder="اختر التاريخ"
-/>
+<script setup>
+import DatepickerHeadless from '@mahlaparvaz/vue-datepicker';
+</script>
 
-<!-- Chinese calendar -->
-<DatepickerInput
-  locale="zh"
-  placeholder="选择日期"
-/>
+<template>
+  <!-- Hijri calendar -->
+  <DatepickerHeadless locale="ar">
+    <template #default="{ open, formattedDate, fontFamily }">
+      <input
+        :value="formattedDate"
+        :style="{ fontFamily }"
+        @click="open"
+        placeholder="اختر التاريخ"
+      />
+    </template>
+  </DatepickerHeadless>
+
+  <!-- Chinese calendar -->
+  <DatepickerHeadless locale="zh">
+    <template #default="{ open, formattedDate, fontFamily }">
+      <input
+        :value="formattedDate"
+        :style="{ fontFamily }"
+        @click="open"
+        placeholder="选择日期"
+      />
+    </template>
+  </DatepickerHeadless>
+</template>
 ```
 
 ## 🎛️ API Reference
@@ -794,11 +1382,15 @@ Available constants:
 ```vue
 <script setup>
 // Just import - styles are automatically included!
-import { DatepickerInput } from '@mahlaparvaz/vue-datepicker';
+import DatepickerHeadless from '@mahlaparvaz/vue-datepicker';
 </script>
 
 <template>
-  <DatepickerInput />
+  <DatepickerHeadless>
+    <template #default="{ open, formattedDate }">
+      <input :value="formattedDate" @click="open" placeholder="Select date" />
+    </template>
+  </DatepickerHeadless>
 </template>
 ```
 
@@ -900,23 +1492,45 @@ The datepicker uses CSS custom properties for easy theming:
 Users can switch between calendars using the built-in locale selector (enabled by default):
 
 ```vue
-<DatepickerInput :enable-locale-selector="true" />
+<script setup>
+import DatepickerHeadless from '@mahlaparvaz/vue-datepicker';
+</script>
+
+<template>
+  <DatepickerHeadless :enable-locale-selector="true">
+    <template #default="{ open, formattedDate }">
+      <input :value="formattedDate" @click="open" placeholder="Select date" />
+    </template>
+  </DatepickerHeadless>
+</template>
 ```
 
 Or control it programmatically:
 
 ```vue
 <script setup>
+import { ref } from 'vue';
+import DatepickerHeadless from '@mahlaparvaz/vue-datepicker';
+
 const currentLocale = ref('fa');
 const selectedDate = ref(null);
 </script>
 
 <template>
-  <DatepickerInput
+  <DatepickerHeadless
     v-model="selectedDate"
     v-model:locale="currentLocale"
     :enable-locale-selector="true"
-  />
+  >
+    <template #default="{ open, formattedDate, fontFamily }">
+      <input
+        :value="formattedDate"
+        :style="{ fontFamily }"
+        @click="open"
+        placeholder="Select date"
+      />
+    </template>
+  </DatepickerHeadless>
 </template>
 ```
 
@@ -928,7 +1542,7 @@ The datepicker maintains its own internal state, so **v-model is completely opti
 
 ```vue
 <script setup>
-import { DatepickerInput } from '@mahlaparvaz/vue-datepicker';
+import DatepickerHeadless from '@mahlaparvaz/vue-datepicker';
 
 // No ref needed! Component manages state internally
 // User can select dates and see them in the input
@@ -936,11 +1550,18 @@ import { DatepickerInput } from '@mahlaparvaz/vue-datepicker';
 
 <template>
   <!-- Works perfectly without v-model -->
-  <DatepickerInput
+  <DatepickerHeadless
     mode="range"
     :enable-time="true"
-    placeholder="Select dates"
-  />
+  >
+    <template #default="{ open, formattedDate }">
+      <input
+        :value="formattedDate"
+        @click="open"
+        placeholder="Select dates"
+      />
+    </template>
+  </DatepickerHeadless>
 </template>
 ```
 
@@ -1038,8 +1659,18 @@ npm run format
 **Yes!** The component works perfectly without v-model. It maintains internal state automatically.
 
 ```vue
-<!-- This works! -->
-<DatepickerInput placeholder="Select date" />
+<script setup>
+import DatepickerHeadless from '@mahlaparvaz/vue-datepicker';
+</script>
+
+<template>
+  <!-- This works! -->
+  <DatepickerHeadless>
+    <template #default="{ open, formattedDate }">
+      <input :value="formattedDate" @click="open" placeholder="Select date" />
+    </template>
+  </DatepickerHeadless>
+</template>
 ```
 
 ### How do I use custom fonts?
@@ -1153,7 +1784,17 @@ Yes! The component checks for `document` availability before injecting styles, m
 Yes! Enable the locale selector:
 
 ```vue
-<DatepickerInput :enable-locale-selector="true" />
+<script setup>
+import DatepickerHeadless from '@mahlaparvaz/vue-datepicker';
+</script>
+
+<template>
+  <DatepickerHeadless :enable-locale-selector="true">
+    <template #default="{ open, formattedDate }">
+      <input :value="formattedDate" @click="open" placeholder="Select date" />
+    </template>
+  </DatepickerHeadless>
+</template>
 ```
 
 Users can switch between all supported calendars dynamically.
