@@ -1,5 +1,6 @@
 import { computed } from 'vue';
 import { useI18nStore } from '@/store/i18n';
+import { useFont } from '@/composables/useFont';
 import {
   formatSingleDate,
   formatRangeDate,
@@ -53,17 +54,7 @@ export const useDateFormatting = (value, options = {}) => {
     }
   });
 
-  const DEFAULT_FONT_MAP = {
-    jalali: 'IRANYekan',
-    hijri: 'IRANYekan',
-    gregorian: 'Arial, sans-serif',
-    chinese: 'Microsoft YaHei, SimHei, sans-serif',
-  };
-
-  const fontFamily = computed(() => {
-    const fonts = { ...DEFAULT_FONT_MAP, ...fontConfig };
-    return fonts[calendarType.value] || 'Arial, sans-serif';
-  });
+  const { fontFamily } = useFont(fontConfig);
 
   return {
     formattedDate,

@@ -1,6 +1,6 @@
 import { computed } from 'vue';
 import { useI18nStore } from '@/store/i18n';
-import { fontConfig } from '@/plugins/font';
+import { fontConfig as globalFontConfig } from '@/plugins/font';
 
 const DEFAULT_FONT_MAP = {
   jalali: 'IRANYekan',
@@ -9,13 +9,19 @@ const DEFAULT_FONT_MAP = {
   chinese: 'Microsoft YaHei, SimHei, sans-serif',
 };
 
-export function useFont() {
+/**
+ * Composable for managing font families based on calendar type
+ * @param {Object} [customFontConfig] - Optional custom font configuration to override defaults
+ * @returns {Object} Object containing computed fontFamily
+ */
+export function useFont(customFontConfig = null) {
   const i18nStore = useI18nStore();
 
   const fontFamily = computed(() => {
     const key = i18nStore.calendarType;
+    const fonts = { ...DEFAULT_FONT_MAP, ...globalFontConfig, ...customFontConfig };
 
-    return fontConfig[key] || DEFAULT_FONT_MAP[key] || 'Arial, sans-serif';
+    return fonts[key] || 'Arial, sans-serif';
   });
 
   return { fontFamily };

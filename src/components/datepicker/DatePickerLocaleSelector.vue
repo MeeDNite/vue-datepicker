@@ -79,20 +79,23 @@
 </script>
 
 <style scoped lang="scss">
+  @use '@/assets/styles/abstracts' as *;
+
   .locale-selector {
     position: relative;
     padding: 0;
-    height: var(--datepicker-button-height);
+    height: size(button-height);
 
     &__icon-open {
       transform: rotate(180deg);
-      transition: transform var(--datepicker-transition-duration) var(--datepicker-transition-timing);
+      transition: transform var(--datepicker-transition-duration)
+        var(--datepicker-transition-timing);
     }
 
     &__dropdown {
       position: absolute;
-      background-color: var(--datepicker-gray-200);
-      border-radius: var(--datepicker-radius-4);
+      background-color: get-color(gray, 200);
+      border-radius: radius(4);
       max-width: 100px;
       z-index: 1000;
       overflow: hidden;
@@ -100,12 +103,13 @@
 
     &__option {
       width: 100%;
-      padding: var(--datepicker-spacing-8);
+      padding: space(8);
       text-align: right;
       cursor: pointer;
-      font-size: var(--datepicker-font-size-12);
-      font-weight: var(--datepicker-font-weight-normal);
-      transition: background-color var(--datepicker-transition-duration) var(--datepicker-transition-timing);
+      font-size: font-size(12);
+      font-weight: font-weight(normal);
+      transition: background-color var(--datepicker-transition-duration)
+        var(--datepicker-transition-timing);
       font-family: inherit;
     }
   }

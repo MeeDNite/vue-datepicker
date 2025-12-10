@@ -144,27 +144,29 @@
 </script>
 
 <style scoped lang="scss">
+  @use '@/assets/styles/abstracts' as *;
+
   .time-picker {
-    @include flex(column, start, stretch, var(--datepicker-spacing-12));
-    border-radius: var(--datepicker-radius-8);
-    padding: var(--datepicker-spacing-16);
+    @include flex(column, start, stretch, space(12));
+    border-radius: radius(8);
+    padding: space(16);
 
     &__header {
       @include flex(row, center, center);
-      padding-bottom: var(--datepicker-spacing-8);
+      padding-bottom: space(8);
     }
 
     &__title {
-      font-size: var(--datepicker-font-size-14);
-      font-weight: var(--datepicker-font-weight-medium);
+      font-size: font-size(14);
+      font-weight: font-weight(medium);
     }
 
     &__content {
-      @include flex(row, space-around, stretch, var(--datepicker-spacing-8));
+      @include flex(row, space-around, stretch, space(8));
     }
 
     &__column {
-      @include flex(column, start, center, var(--datepicker-spacing-8));
+      @include flex(column, start, center, space(8));
       flex: 1;
 
       &--period {
@@ -173,77 +175,78 @@
     }
 
     &__label {
-      font-size: var(--datepicker-font-size-12);
-      font-weight: var(--datepicker-font-weight-medium);
+      font-size: font-size(12);
+      font-weight: font-weight(medium);
       text-align: center;
-      margin-bottom: var(--datepicker-spacing-4);
+      margin-bottom: space(4);
     }
 
     &__scroll-container {
-      @include flex(column, start, stretch, var(--datepicker-spacing-4));
+      @include flex(column, start, stretch, space(4));
       max-height: 150px;
       overflow-y: auto;
       width: 100%;
-      padding: var(--datepicker-spacing-4);
-      background-color: var(--datepicker-white);
-      border-radius: var(--datepicker-radius-4);
+      padding: space(4);
+      background-color: get-color(text, white);
+      border-radius: radius(4);
 
       &::-webkit-scrollbar {
-        width: var(--datepicker-spacing-4);
+        width: space(4);
       }
 
       &::-webkit-scrollbar-track {
-        border-radius: var(--datepicker-radius-4);
+        border-radius: radius(4);
       }
 
       &::-webkit-scrollbar-thumb {
-        border-radius: var(--datepicker-radius-4);
+        border-radius: radius(4);
 
         &:hover {
-          background: var(--datepicker-gray-100);
+          background: get-color(gray, 100);
         }
       }
     }
 
     &__item {
-      padding: var(--datepicker-spacing-8) var(--datepicker-spacing-12);
+      padding: space(8) space(12);
       text-align: center;
-      font-size: var(--datepicker-font-size-14);
-      font-weight: var(--datepicker-font-weight-normal);
-      border-radius: var(--datepicker-radius-4);
+      font-size: font-size(14);
+      font-weight: font-weight(normal);
+      border-radius: radius(4);
       cursor: pointer;
-      transition: all var(--datepicker-transition-duration) var(--datepicker-transition-timing);
+      transition: all var(--datepicker-transition-duration)
+        var(--datepicker-transition-timing);
       user-select: none;
 
       &:hover {
-        background-color: var(--datepicker-gray-100);
+        background-color: get-color(gray, 100);
       }
 
       &--selected {
-        background-color: var(--datepicker-primary-500);
-        color: var(--datepicker-white);
-        font-weight: var(--datepicker-font-weight-medium);
+        background-color: get-color(primary, 500);
+        color: get-color(text, white);
+        font-weight: font-weight(medium);
 
         &:hover {
-          background-color: var(--datepicker-primary-600);
+          background-color: get-color(primary, 600);
         }
       }
     }
 
     &__display {
       @include flex(row, center, center);
-      padding: var(--datepicker-spacing-12);
-      background-color: var(--datepicker-white);
-      border-radius: var(--datepicker-radius-4);
+      padding: space(12);
+      background-color: get-color(text, white);
+      border-radius: radius(4);
     }
 
     &__display-text {
-      font-size: var(--datepicker-font-size-14);
+      font-size: font-size(14);
 
       strong {
-        color: var(--datepicker-primary-600);
-        font-weight: var(--datepicker-font-weight-semibold);
-        margin-right: var(--datepicker-spacing-4);
+        color: get-color(primary, 600);
+        font-weight: font-weight(semibold);
+        margin-right: space(4);
       }
     }
   }

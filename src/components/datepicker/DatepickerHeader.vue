@@ -200,15 +200,19 @@
 </script>
 
 <style lang="scss" scoped>
+  @use '@/assets/styles/abstracts' as *;
+
   .datepicker {
     &__header {
       @include flex(row, start, center);
-      font-weight: var(--datepicker-font-weight-normal);
-      font-size: var(--datepicker-font-size-12);
+      font-weight: font-weight(normal);
+      font-size: font-size(12);
       width: 100%;
+
       &-close {
         cursor: pointer;
       }
+
       p {
         width: 100%;
         text-align: center;
@@ -216,10 +220,11 @@
     }
 
     &__controls {
-      @include flex(row, space-between, center, var(--datepicker-spacing-8));
-      margin-bottom: var(--datepicker-spacing-20);
+      @include flex(row, space-between, center, space(8));
+      margin-bottom: space(20);
+
       &-btn {
-        height: var(--datepicker-button-height);
+        height: size(button-height);
         padding: 0;
         border: none;
       }
@@ -228,12 +233,14 @@
 
   .datepicker-content {
     direction: rtl;
+
     &__months {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      row-gap: var(--datepicker-spacing-12);
-      column-gap: var(--datepicker-spacing-24);
+      row-gap: space(12);
+      column-gap: space(24);
       width: 100%;
+
       &-btn--active {
         @include button-active;
       }
@@ -246,11 +253,11 @@
 
     &__years {
       direction: ltr;
-      max-height: var(--datepicker-years-max-height);
+      max-height: size(years-max-height);
       overflow-y: auto;
       overflow-x: hidden;
-      padding-right: var(--datepicker-spacing-12);
-      @include flex(row, space-between, center, var(--datepicker-spacing-12), wrap);
+      padding-right: space(12);
+      @include flex(row, space-between, center, space(12), wrap);
       @include custom-scrollbar;
 
       &-btn--active {
@@ -260,12 +267,13 @@
 
     &__years-controls {
       @include flex(row, space-between, center);
-      height: var(--datepicker-button-height);
+      height: size(button-height);
       cursor: pointer;
-      margin-bottom: var(--datepicker-spacing-20);
+      margin-bottom: space(20);
+
       &-year {
-        font-weight: var(--datepicker-font-weight-normal);
-        font-size: var(--datepicker-font-size-12);
+        font-weight: font-weight(normal);
+        font-size: font-size(12);
       }
     }
   }

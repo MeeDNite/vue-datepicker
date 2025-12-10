@@ -223,39 +223,43 @@
   });
 </script>
 <style scoped lang="scss">
+  @use '@/assets/styles/abstracts' as *;
+
   .datepicker-content {
-    @include flex(column, space-between, normal, var(--datepicker-spacing-20));
-    margin-bottom: var(--datepicker-spacing-20);
+    @include flex(column, space-between, normal, space(20));
+    margin-bottom: space(20);
+
     &__weekdays {
-      @include datepicker-grid(7, var(--datepicker-grid-gap));
-      font-size: var(--datepicker-font-size-12);
-      font-weight: var(--datepicker-font-weight-normal);
-      background-color: var(--datepicker-gray-50);
-      height: var(--datepicker-weekday-height);
+      @include datepicker-grid(7, space(16));
+      font-size: font-size(12);
+      font-weight: font-weight(normal);
+      background-color: get-color(gray, 50);
+      height: size(weekday-height);
       width: 100%;
-      border-radius: var(--datepicker-radius-4);
+      border-radius: radius(4);
     }
 
     &__weekday {
       text-align: center;
-      font-size: var(--datepicker-font-size-12);
-      font-weight: var(--datepicker-font-weight-normal);
+      font-size: font-size(12);
+      font-weight: font-weight(normal);
     }
 
     &__days {
       display: flex;
       flex-direction: column;
-      gap: var(--datepicker-grid-gap);
+      gap: space(16);
       position: relative;
     }
+
     &__week {
       display: grid;
-      grid-template-columns: repeat(var(--datepicker-grid-columns), var(--datepicker-day-size));
+      grid-template-columns: repeat(7, size(day-size));
       align-items: center;
-      row-gap: var(--datepicker-grid-gap);
-      column-gap: var(--datepicker-grid-column-gap);
-      font-weight: var(--datepicker-font-weight-normal);
-      font-size: var(--datepicker-font-size-14);
+      row-gap: space(16);
+      column-gap: 0;
+      font-weight: font-weight(normal);
+      font-size: font-size(14);
       justify-content: space-between;
       position: relative;
 
@@ -266,11 +270,7 @@
         left: var(--gradient-start, 0%);
         width: calc(var(--gradient-end, 0%) - var(--gradient-start, 0%));
         height: 100%;
-        background: linear-gradient(
-          270deg,
-          var(--datepicker-range-gradient-end) 0%,
-          var(--datepicker-range-gradient-start) 100%
-        );
+        background: linear-gradient(270deg, range(end) 0%, range(start) 100%);
         z-index: 0;
         pointer-events: none;
       }
@@ -297,13 +297,13 @@
 
       &--prev-month,
       &--next-month {
-        color: var(--datepicker-gray-300);
+        color: get-color(gray, 300);
       }
 
       &-today-text {
-        color: var(--datepicker-primary-400);
-        font-weight: var(--datepicker-font-weight-normal);
-        font-size: var(--datepicker-font-size-10);
+        color: get-color(primary, 400);
+        font-weight: font-weight(normal);
+        font-size: font-size(10);
       }
     }
   }

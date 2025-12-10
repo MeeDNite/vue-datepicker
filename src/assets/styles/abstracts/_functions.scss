@@ -1,0 +1,39 @@
+@use 'sass:map';
+@use './variables' as *;
+
+@function get-color($group, $key) {
+  @return map.get(map.get($colors, $group), $key);
+}
+
+@function radius($key) {
+  @return map.get($radius, $key);
+}
+
+@function space($key) {
+  @return map.get($spacing, $key);
+}
+
+@function font-size($key) {
+  @return map.get($font-sizes, $key);
+}
+
+@function font-weight($key) {
+  @return map.get($font-weights, $key);
+}
+
+@function size($key) {
+  @return map.get($dimensions, $key);
+}
+
+@function font($type) {
+  $f: map.get($fonts, $type);
+  @return if(type-of($f) == 'list', join($f, ', '), $f);
+}
+
+@function range($key) {
+  @return map.get($range-gradient, $key);
+}
+
+@function scroll($key) {
+  @return map.get($scrollbar, $key);
+}

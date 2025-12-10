@@ -84,7 +84,9 @@ export default defineConfig({
       scss: {
         additionalData: `
           @use "@/assets/styles/abstracts/variables" as *;
+          @use "@/assets/styles/abstracts/functions" as *;
           @use "@/assets/styles/abstracts/mixins" as *;
+          @use "@/assets/styles/abstracts/index" as *;
         `,
       },
     },

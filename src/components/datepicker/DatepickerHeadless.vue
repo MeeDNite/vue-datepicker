@@ -175,14 +175,14 @@
 </script>
 
 <style scoped lang="scss">
+  @use '@/assets/styles/abstracts' as *;
+
   .datepicker {
     &__overlay {
+      @include flex(row, center, center);
       position: fixed;
       inset: 0;
       background-color: rgba(0, 0, 0, 0.5);
-      display: flex;
-      align-items: center;
-      justify-content: center;
       z-index: 1000;
 
       &-content {
@@ -204,7 +204,7 @@
 
     @keyframes slideUp {
       from {
-        transform: translateY(var(--datepicker-spacing-20));
+        transform: translateY(space(20));
         opacity: 0;
       }
       to {

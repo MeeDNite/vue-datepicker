@@ -136,11 +136,12 @@
 </script>
 
 <style scoped lang="scss">
+  @use '@/assets/styles/abstracts' as *;
+
   .datepicker {
-    background-color: $gray-100;
-    width: 360px;
-    padding: 24px 16px 16px 16px;
-    border-radius: $radius-8;
-    @include flex(column, space-between, 20px);
+    background-color: get-color(gray, 100);
+    width: size(width);
+    padding: space(24) space(16) space(16) space(16);
+    border-radius: radius(8);
   }
 </style>
