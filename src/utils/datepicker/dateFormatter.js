@@ -2,7 +2,9 @@ import { toPersianNumbers } from '@/locales';
 import { set, isValid } from 'date-fns';
 import { getDaysInMonth as getJalaaliDays } from 'date-fns-jalali';
 import { toGregorian } from 'hijri-converter';
-import { lunarToSolar } from 'lunar-javascript';
+import pkg from 'lunar-javascript'
+const { lunarToSolar } = pkg
+
 
 function isJalaaliDate(date) {
   return date && typeof date === 'object' && 'jy' in date && 'jm' in date && 'jd' in date;
