@@ -1,8 +1,16 @@
 {
-  "name": "@mahlaparvaz/vue-datepicker",
+  "name": "@meednite/vue-datepicker",
   "version": "0.4.6",
   "description": "A comprehensive Vue 3 datepicker with Jalali, Gregorian, Hijri, and Chinese calendar support. Features range selection, time picker, and full customization.",
-  "author": "Mahla Zohourparvaz <mahla.zph@gmail.com>",
+  "author": "Milad Ghazi <milad.ghazi@gmail.com>",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MeeDNite/vue-datepicker.git"
+  },
+  "homepage": "https://github.com/MeeDNite/vue-datepicker",
+  "bugs": {
+    "url": "https://github.com/MeeDNite/vue-datepicker/issues"
+  },
   "license": "MIT",
   "type": "module",
   "main": "./dist/vue-datepicker.umd.js",
@@ -44,9 +52,6 @@
     "vue-calendar",
     "vue3-datepicker"
   ],
-  "repository": {
-    "type": "git"
-  },
   "engines": {
     "node": "^20.19.0 || >=22.12.0"
   },
@@ -80,5 +85,6 @@
     "hijri-converter": "^1.1.1",
     "lunar-javascript": "^1.7.7",
     "rollup-plugin-visualizer": "^6.0.5"
-  }
+  },
+  "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
 }
